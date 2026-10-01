@@ -52,8 +52,9 @@ system. It is not a signed GxP record.
    - `qa-review-checklist.md` (medium, high): pre-fill the comment column with where to look;
      the yes / no column is for QA. `deviation-capa.md` for any failed step.
    - `inspection-pack.md`: one row per artefact with its path and status; mark documents the
-     matrix does not require as n/a with the reason. List the audit events for the change
-     (sources in `validation/audit-log.md`).
+     matrix does not require as n/a with the reason. In the audit-trail row, list the events so
+     far (session created, PR opened, review run, CI runs; sources in `validation/audit-log.md`).
+     QA adds the approval and merge events after merge.
 6. Check: `python3 -c "import csv,sys; list(csv.DictReader(open(sys.argv[1])))" <file>` for every
    CSV; every URS id appears in traceability and in a test step; no signature field is filled.
 7. Fill the PR template sections (Ticket, URS delta, Test mapping, Change record) from the pack.

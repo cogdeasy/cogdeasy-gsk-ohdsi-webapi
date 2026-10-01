@@ -33,7 +33,7 @@ and its status. Signed copies live in GSK's quality system; this index points to
 | 16 | training note | training-note.md | | |
 | 17 | CI runs (`build`, `tests`, `scan`) | <GitHub Actions links> | | n/a |
 | 18 | code review and approval | <PR review links> | | n/a |
-| 19 | audit trail | audit-log.md, Devin audit-log API, GitHub events | | n/a |
+| 19 | audit trail | events so far: <session created, PR opened, review, CI runs>; QA adds approval and merge after merge (sources: audit-log.md) | | n/a |
 
 Mark rows the risk matrix does not require as "n/a".
 
