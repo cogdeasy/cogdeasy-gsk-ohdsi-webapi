@@ -29,6 +29,7 @@ The tier sets where people sit in the flow, in line with GSK's risk-based AI fra
 
 1. A ticket is labelled for Devin (Jira automation).
 2. Devin's PR fills the template sections: Ticket, URS delta, Test mapping, Change record.
-3. The GxP evidence automation drafts `validation/changes/CR-<ticket>.md` and appends rows to
-   `validation/traceability.csv` on the PR branch.
+3. The `gsk-gxp-evidence-pack` Devin automation (defined in cogdeasy/cogdeasy-gsk-demo-ops,
+   triggered when a PR opens here) drafts `validation/changes/CR-<ticket>.md` and appends rows
+   to `validation/traceability.csv` on the PR branch. Nothing in this repository runs that step.
 4. The CODEOWNERS approver reviews code and pack together. Nothing merges without them.

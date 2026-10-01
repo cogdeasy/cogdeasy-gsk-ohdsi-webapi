@@ -7,13 +7,11 @@ cd "$(dirname "$0")"
 PROFILE="${MAVEN_PROFILE:-webapi-postgresql}"
 OUT=target/repro
 
-if [ ! -f target/classes/org/ohdsi/webapi/util/GenericExceptionMapper.class ]; then
-  mvn -B -q -P"$PROFILE" -DskipUnitTests -DskipITtests compile
-fi
+mvn -B -q -P"$PROFILE" -DskipUnitTests -DskipITtests compile
 mkdir -p "$OUT"
-if [ ! -f "$OUT/classpath.txt" ] || [ pom.xml -nt "$OUT/classpath.txt" ]; then
-  mvn -B -q -P"$PROFILE" dependency:build-classpath -Dmdep.outputFile="$OUT/classpath.txt" >/dev/null
+if [ ! -f "$OUT/classpath-$PROFILE.txt" ] || [ pom.xml -nt "$OUT/classpath-$PROFILE.txt" ]; then
+  mvn -B -q -P"$PROFILE" dependency:build-classpath -Dmdep.outputFile="$OUT/classpath-$PROFILE.txt" >/dev/null
 fi
-CP="target/classes:$(cat "$OUT/classpath.txt")"
+CP="target/classes:$(cat "$OUT/classpath-$PROFILE.txt")"
 javac -nowarn -d "$OUT" -cp "$CP" dev/repro/ErrorMapperRepro.java
 java -cp "$OUT:$CP" ErrorMapperRepro 2>/dev/null
