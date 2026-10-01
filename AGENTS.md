@@ -42,6 +42,14 @@ mvn -B -Pwebapi-postgresql -Dtest=GenericExceptionMapperTest test  # one class
    Change record. Use the templates in `validation/`.
 6. Do not merge. A named GSK approver (CODEOWNERS) approves and merges.
 
+## Validation evidence
+
+- `validation/README.md`: CSA by default, full CSV for high risk; the document matrix says which
+  templates a change needs.
+- `.agents/skills/gxp-evidence-pack/SKILL.md`: pick and fill the documents from the risk
+  assessment, PR and ticket.
+- `.agents/skills/test-engineer/SKILL.md`: design tests from the URS, run them, record evidence.
+
 ## Conventions
 
 - Minimal, focused diffs. Do not reformat files you did not need to change; the upstream code

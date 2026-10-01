@@ -1,0 +1,7 @@
+urs_id,requirement,ticket,commit,test,result,reviewer
+URS-1,DataIntegrityViolationException with no cause returns 409 and the mapper does not throw,GSK-1 AC1,<pending>,OQ-GSK-1 step 3; GenericExceptionMapperTest <pending>,<pending>,
+URS-2,One level of cause with no nested cause returns 409,GSK-1 AC2,<pending>,OQ-GSK-1 step 4; GenericExceptionMapperTest <pending>,<pending>,
+URS-3,"Nested cause without Detail: returns 409 with a generic message and no raw database text",GSK-1 AC3,<pending>,OQ-GSK-1 step 5; GenericExceptionMapperTest <pending>,<pending>,
+URS-4,Nested cause with a PostgreSQL Detail: line returns 409 with only the detail text,GSK-1 AC4,<pending>,OQ-GSK-1 step 6; GenericExceptionMapperTest <pending>,<pending>,
+URS-5,"Existing mappings unchanged (403, 404, 400, 501, 500)",GSK-1 AC5,<pending>,OQ-GSK-1 step 7; GenericExceptionMapperTest <pending>,<pending>,
+URS-6,Full exception and database text go to the server log and not to the response,GSK-1,<pending>,OQ-GSK-1 step 8; GenericExceptionMapperTest <pending>,<pending>,
