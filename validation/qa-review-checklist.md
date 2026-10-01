@@ -32,5 +32,5 @@ Draft. Not a signed GxP record.
 | field | value |
 |---|---|
 | QA reviewer | __________________ |
-| decision | accept / accept with findings / reject |
+| decision (accept / accept with findings / reject) | __________________ |
 | date | __________________ |

@@ -11,7 +11,8 @@ system. It is not a signed GxP record.
 ## Hard rules
 
 - Never fill reviewer, approver, decision, signature or date fields. Leave the
-  `__________________` blank or the empty cell as it is.
+  `__________________` blank or the empty cell as it is. Options in brackets in the label, e.g.
+  `decision (approve / reject / rework)`, are for the named person to choose.
 - Every URS line maps to at least one test, in `traceability.csv` and in the OQ protocol or CSA
   record. A URS line with no test is a gap: say so in the PR, do not drop the line.
 - Write expected results before running anything. Do not edit an expected result after a run;
@@ -22,16 +23,18 @@ system. It is not a signed GxP record.
 
 ## Steps
 
-1. Read the ticket (summary, acceptance criteria, labels) and the PR diff. Note the tier from
+1. If the PR has no ticket (tooling or docs only, no application code change), no pack is
+   needed: say so in the PR and stop.
+2. Read the ticket (summary, acceptance criteria, labels) and the PR diff. Note the tier from
    `validation/README.md` (this WebAPI is silver).
-2. Copy `validation/risk-assessment.md` to `validation/changes/<key>/risk-assessment.md` and
+3. Copy `validation/risk-assessment.md` to `validation/changes/<key>/risk-assessment.md` and
    fill it: change summary, GAMP 5 category, patient safety / product quality / data integrity
    (yes or no with a reason), severity, likelihood and detectability (1-3 each, with reasons),
    score and risk. Leave the CSV lead review block blank.
-3. Take the column for that risk from the document matrix in `validation/README.md`. Add the
+4. Take the column for that risk from the document matrix in `validation/README.md`. Add the
    silver-tier minimum (URS delta, traceability, change record). Tick the list at the bottom of
    the risk assessment.
-4. Copy each required template into `validation/changes/<key>/`, keeping the file name, and
+5. Copy each required template into `validation/changes/<key>/`, keeping the file name, and
    fill it. Include exactly the documents the matrix requires, no more, no less:
    - `urs-delta.md`: one URS line per acceptance criterion that describes system behaviour.
      Process criteria (CI green, PR sections) go to the QA checklist instead.
@@ -49,9 +52,10 @@ system. It is not a signed GxP record.
    - `qa-review-checklist.md` (medium, high): pre-fill the comment column with where to look;
      the yes / no column is for QA. `deviation-capa.md` for any failed step.
    - `inspection-pack.md`: one row per artefact with its path and status; mark documents the
-     matrix does not require as n/a with the reason.
-5. Check: `python3 -c "import csv,sys; list(csv.DictReader(open(sys.argv[1])))" <file>` for every
+     matrix does not require as n/a with the reason. List the audit events for the change
+     (sources in `validation/audit-log.md`).
+6. Check: `python3 -c "import csv,sys; list(csv.DictReader(open(sys.argv[1])))" <file>` for every
    CSV; every URS id appears in traceability and in a test step; no signature field is filled.
-6. Fill the PR template sections (Ticket, URS delta, Test mapping, Change record) from the pack.
+7. Fill the PR template sections (Ticket, URS delta, Test mapping, Change record) from the pack.
 
 A worked medium-risk example is in `validation/examples/GSK-1/`.

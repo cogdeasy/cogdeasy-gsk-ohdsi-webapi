@@ -53,11 +53,13 @@ R = required, O = optional, n/a = not used for that risk.
 | [`release-notes.md`](release-notes.md) | R | R | R | release manager |
 | [`training-note.md`](training-note.md) | n/a | n/a | R | release manager |
 | [`inspection-pack.md`](inspection-pack.md) | R | R | R | QA |
-| [`audit-log.md`](audit-log.md) | R | R | R | QA |
 
 Filled copies for a change go in `validation/changes/<key>/`, one file per template with the
 same name (for example `validation/changes/GSK-1/risk-assessment.md`, `change-record.md`,
 `traceability.csv`). The pack has exactly the documents its risk column requires.
+
+[`audit-log.md`](audit-log.md) is not copied per change. It says where the audit trail comes
+from; the events for a change are listed in `inspection-pack.md`.
 
 `deviation-capa.md` becomes required as soon as a test step fails or a protocol is not followed.
 
@@ -75,7 +77,8 @@ same name (for example `validation/changes/GSK-1/risk-assessment.md`, `change-re
 
 ## Fan-out flow
 
-1. A ticket is labelled for Devin (Jira automation).
+1. A ticket is labelled for Devin (Jira automation). A PR with no ticket (tooling or docs
+   only, no application code change) needs no evidence pack; say so in the PR.
 2. Risk assessment: fill `risk-assessment.md`. The result picks the column of the matrix above.
 3. Requirements: `change-record.md`, `urs-delta.md`, `traceability.csv` rows; then
    `fs-ds-delta.md` (medium, high) and, for high risk, `validation-plan-delta.md`.

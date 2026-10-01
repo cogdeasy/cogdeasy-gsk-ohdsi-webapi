@@ -33,5 +33,5 @@ Draft. Not a signed GxP record.
 | field | value |
 |---|---|
 | release manager | __________________ |
-| decision | release / hold |
+| decision (release / hold) | __________________ |
 | date | __________________ |

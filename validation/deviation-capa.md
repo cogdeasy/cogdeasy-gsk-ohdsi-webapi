@@ -1,8 +1,12 @@
-# Deviation and CAPA: <deviation id>
+# Deviations and CAPA: <ticket key>
 
 Draft. Not a signed GxP record.
 
-Raise one record for each failed test step, unplanned event or departure from a protocol.
+Raise one record for each failed test step, unplanned event or departure from a protocol. One
+file per change: for a second deviation, copy everything from "Deviation" down and number it
+DEV-<ticket key>-2, and so on.
+
+## Deviation DEV-<ticket key>-<n>
 
 | field | value |
 |---|---|
@@ -12,11 +16,11 @@ Raise one record for each failed test step, unplanned event or departure from a 
 | raised by | <name or Devin session link> |
 | date raised | <date> |
 
-## Description
+### Description
 
 <!-- What happened, expected vs actual, evidence ref. -->
 
-## Impact
+### Impact
 
 | area | impact | reason |
 |---|---|---|
@@ -27,11 +31,11 @@ Raise one record for each failed test step, unplanned event or departure from a 
 
 Classification: __________________ (critical / major / minor, set by QA)
 
-## Root cause
+### Root cause
 
 <!-- Draft analysis; confirmed by QA. -->
 
-## CAPA
+### CAPA
 
 | type | action | owner | due | status |
 |---|---|---|---|---|
@@ -39,7 +43,7 @@ Classification: __________________ (critical / major / minor, set by QA)
 | corrective | | | | |
 | preventive | | | | |
 
-## Closure
+### Closure
 
 | field | value |
 |---|---|

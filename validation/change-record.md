@@ -19,5 +19,5 @@ Draft change record. Not a signed GxP record.
 | security scan | <scan result, new findings: n> |
 | rollback | revert PR <n>; no schema or data change |
 | reviewer | __________________ (named GSK approver) |
-| decision | approve / reject / rework |
+| decision (approve / reject / rework) | __________________ |
 | date | __________________ |

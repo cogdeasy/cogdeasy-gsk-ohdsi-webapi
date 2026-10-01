@@ -97,5 +97,5 @@ document this change carries.
 |---|---|
 | prepared by | <name or Devin session link> |
 | reviewed by (CSV lead) | __________________ |
-| decision | agree / change rating |
+| decision (agree / change rating) | __________________ |
 | date | __________________ |
