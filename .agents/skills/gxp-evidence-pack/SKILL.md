@@ -23,8 +23,10 @@ system. It is not a signed GxP record.
 
 ## Steps
 
-1. If the PR has no ticket (tooling or docs only, no application code change), no pack is
-   needed: say so in the PR and stop.
+1. If the PR has no ticket (tooling or docs only, no application code change), no
+   `validation/changes/<key>/` pack is needed. The silver-tier change record still is: fill the
+   Change record section of the PR template (tier, risk, rollback, evidence), say in the PR that
+   no pack applies, and stop.
 2. Read the ticket (summary, acceptance criteria, labels) and the PR diff. Note the tier from
    `validation/README.md` (this WebAPI is silver).
 3. Copy `validation/risk-assessment.md` to `validation/changes/<key>/risk-assessment.md` and

@@ -78,7 +78,9 @@ from; the events for a change are listed in `inspection-pack.md`.
 ## Fan-out flow
 
 1. A ticket is labelled for Devin (Jira automation). A PR with no ticket (tooling or docs
-   only, no application code change) needs no evidence pack; say so in the PR.
+   only, no application code change) needs no `validation/changes/<key>/` pack, but still needs
+   the silver-tier change record: fill the Change record section of the PR template (tier,
+   risk, rollback, evidence) and say in the PR that no pack applies.
 2. Risk assessment: fill `risk-assessment.md`. The result picks the column of the matrix above.
 3. Requirements: `change-record.md`, `urs-delta.md`, `traceability.csv` rows; then
    `fs-ds-delta.md` (medium, high) and, for high risk, `validation-plan-delta.md`.
