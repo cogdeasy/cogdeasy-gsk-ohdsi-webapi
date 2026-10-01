@@ -1,0 +1,3 @@
+# Named GSK approver for every change. Replace with the GSK approver account before the demo;
+# the PR author cannot approve their own PR.
+* @cogdeasy
