@@ -7,9 +7,7 @@ cd "$(dirname "$0")"
 PROFILE="${MAVEN_PROFILE:-webapi-postgresql}"
 OUT=target/repro
 
-if [ ! -f target/classes/org/ohdsi/webapi/util/GenericExceptionMapper.class ]; then
-  mvn -B -q -P"$PROFILE" -DskipUnitTests -DskipITtests compile
-fi
+mvn -B -q -P"$PROFILE" -DskipUnitTests -DskipITtests compile
 mkdir -p "$OUT"
 if [ ! -f "$OUT/classpath.txt" ] || [ pom.xml -nt "$OUT/classpath.txt" ]; then
   mvn -B -q -P"$PROFILE" dependency:build-classpath -Dmdep.outputFile="$OUT/classpath.txt" >/dev/null
