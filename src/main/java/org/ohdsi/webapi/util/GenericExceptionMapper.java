@@ -37,7 +37,17 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.SQLException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.ohdsi.webapi.vocabulary.ConceptRecommendedNotInstalledException;
 
 /**
@@ -48,7 +58,11 @@ import org.ohdsi.webapi.vocabulary.ConceptRecommendedNotInstalledException;
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericExceptionMapper.class);
-    private final String DETAIL = "Detail: ";
+    private static final Pattern DUPLICATE_KEY = Pattern.compile("Detail: Key \\((\\w+)\\)=\\((.*?)\\) already exists");
+    private static final String CONCEPT_SET_NAME_CONSTRAINT = "uq_cs_name";
+    private static final String CONCEPT_SET_NAME_COLUMN = "concept_set_name";
+    private static final int MAX_CAUSE_DEPTH = 32;
+    private static final String CONFLICT_MESSAGE = "The request conflicts with existing data";
 
     @Override
     public Response toResponse(Throwable ex) {
@@ -58,9 +72,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
         Status responseStatus;
         if (ex instanceof DataIntegrityViolationException) {
             responseStatus = Status.CONFLICT;
-            String cause = ex.getCause().getCause().getMessage();
-            cause = cause.substring(cause.indexOf(DETAIL) + DETAIL.length());
-            ex = new RuntimeException(cause);
+            ex = new RuntimeException(getConflictMessage(ex));
         } else if (ex instanceof UnauthorizedException || ex instanceof ForbiddenException) {
             responseStatus = Status.FORBIDDEN;
         } else if (ex instanceof NotFoundException) {
@@ -107,6 +119,58 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
                 .entity(errorMessage)
                 .type(MediaType.APPLICATION_JSON)
                 .build();
+    }
+
+    private String getConflictMessage(Throwable ex) {
+        try {
+            List<String> sqlMessages = getSqlMessages(ex);
+            boolean conceptSetName = sqlMessages.stream().anyMatch(m -> m.contains(CONCEPT_SET_NAME_CONSTRAINT));
+            for (String message : sqlMessages) {
+                Matcher matcher = DUPLICATE_KEY.matcher(message);
+                if (matcher.find()) {
+                    String column = matcher.group(1);
+                    String value = matcher.group(2);
+                    if (conceptSetName || CONCEPT_SET_NAME_COLUMN.equals(column)) {
+                        return String.format("Concept set name '%s' is already in use", value);
+                    }
+                    if (column.toLowerCase().contains("name")) {
+                        return String.format("Name '%s' is already in use", value);
+                    }
+                    return CONFLICT_MESSAGE;
+                }
+            }
+            return conceptSetName ? "A concept set with this name already exists" : CONFLICT_MESSAGE;
+        } catch (RuntimeException e) {
+            LOGGER.warn("Could not derive a conflict message", e);
+            return CONFLICT_MESSAGE;
+        }
+    }
+
+    // Messages of every SQLException in the cause chain, including next exceptions, deepest first.
+    private List<String> getSqlMessages(Throwable ex) {
+        Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        Deque<String> messages = new ArrayDeque<>();
+        Deque<Throwable> pending = new ArrayDeque<>();
+        pending.add(ex);
+        while (!pending.isEmpty() && visited.size() < MAX_CAUSE_DEPTH) {
+            Throwable current = pending.poll();
+            if (!visited.add(current)) {
+                continue;
+            }
+            if (current instanceof SQLException) {
+                SQLException sqlException = (SQLException) current;
+                if (sqlException.getMessage() != null) {
+                    messages.push(sqlException.getMessage());
+                }
+                if (sqlException.getNextException() != null) {
+                    pending.add(sqlException.getNextException());
+                }
+            }
+            if (current.getCause() != null) {
+                pending.add(current.getCause());
+            }
+        }
+        return new ArrayList<>(messages);
     }
 
     private Throwable getThrowable(UndeclaredThrowableException ex) {
