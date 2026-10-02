@@ -21,31 +21,37 @@ public class ErrorMapperRepro {
         // The mapper logs every stack trace at ERROR; keep the console to the scenario table.
         Configurator.setLevel(GenericExceptionMapper.class.getName(), Level.OFF);
         int failures = 0;
-        failures += run("no cause", new DataIntegrityViolationException("could not execute statement"));
+        failures += run("no cause", new DataIntegrityViolationException("could not execute statement"), null);
         failures += run("single cause", new DataIntegrityViolationException("could not execute statement",
-                new RuntimeException("constraint violation")));
+                new RuntimeException("constraint violation")), null);
         failures += run("nested cause without Detail", new DataIntegrityViolationException("could not execute statement",
-                new RuntimeException("constraint violation", new SQLException(RAW_DB_TEXT))));
+                new RuntimeException("constraint violation", new SQLException(RAW_DB_TEXT))), null);
         failures += run("nested cause with Detail", new DataIntegrityViolationException("could not execute statement",
                 new RuntimeException("constraint violation",
-                        new SQLException(RAW_DB_TEXT + "\n  Detail: Key (name)=(Diabetes) already exists."))));
+                        new SQLException(RAW_DB_TEXT + "\n  Detail: Key (name)=(Diabetes) already exists."))), "Diabetes");
         System.out.println();
         if (failures > 0) {
-            System.out.println("REPRODUCED: " + failures + " of 4 scenarios return an unsafe response");
+            System.out.println("REPRODUCED: " + failures + " of 4 scenarios return an unsafe or unhelpful response");
             System.exit(1);
         }
-        System.out.println("ok: all 4 scenarios return a safe 409");
+        System.out.println("ok: all 4 scenarios return a safe 409; the parsed-name scenario names the clashing name");
     }
 
-    private static int run(String name, Throwable ex) {
+    /**
+     * @param clashingName when not null, the client message must name it
+     */
+    private static int run(String name, Throwable ex, String clashingName) {
         String outcome;
         boolean safe;
         try {
             Response response = new GenericExceptionMapper().toResponse(ex);
             String message = ((ErrorMessage) response.getEntity()).getPayload().getMessage();
-            boolean leaks = message != null && (message.contains("duplicate key") || message.contains("constraint \""));
-            safe = response.getStatus() == 409 && !leaks;
-            outcome = response.getStatus() + " \"" + message + "\"" + (leaks ? "  <- raw database text" : "");
+            boolean leaks = message != null && (message.contains("duplicate key") || message.contains("constraint \"")
+                    || message.contains("Key ("));
+            boolean missingName = clashingName != null && (message == null || !message.contains(clashingName));
+            safe = response.getStatus() == 409 && !leaks && !missingName;
+            outcome = response.getStatus() + " \"" + message + "\"" + (leaks ? "  <- raw database text" : "")
+                    + (missingName ? "  <- does not name '" + clashingName + "'" : "");
         } catch (RuntimeException e) {
             safe = false;
             outcome = "mapper threw " + e.getClass().getName();
