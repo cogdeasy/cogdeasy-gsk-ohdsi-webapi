@@ -17,18 +17,15 @@ package org.ohdsi.webapi.cohortdefinition;
 
 import org.ohdsi.circe.helper.ResourceHelper;
 import org.ohdsi.cohortcharacterization.CCQueryBuilder;
-import org.ohdsi.sql.BigQuerySparkTranslate;
 import org.ohdsi.sql.SqlRender;
 import org.ohdsi.sql.SqlSplit;
 import org.ohdsi.sql.SqlTranslate;
 import org.ohdsi.webapi.cohortcharacterization.domain.CcFeAnalysisEntity;
 import org.ohdsi.webapi.cohortcharacterization.domain.CohortCharacterizationEntity;
 import org.ohdsi.webapi.common.generation.CancelableTasklet;
-import org.ohdsi.webapi.common.generation.GenerationUtils;
 import org.ohdsi.webapi.feanalysis.domain.FeAnalysisEntity;
 import org.ohdsi.webapi.feanalysis.repository.FeAnalysisEntityRepository;
 import org.ohdsi.webapi.generationcache.GenerationCacheHelper;
-import org.ohdsi.webapi.shiro.Entities.UserRepository;
 import org.ohdsi.webapi.source.Source;
 import org.ohdsi.webapi.source.SourceService;
 import org.ohdsi.webapi.util.CancelableJdbcTemplate;
@@ -43,7 +40,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.collect.ImmutableList;
 import com.odysseusinc.arachne.commons.types.DBMSType;
 
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
