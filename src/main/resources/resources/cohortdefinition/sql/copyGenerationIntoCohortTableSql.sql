@@ -4,11 +4,6 @@ DELETE FROM @results_database_schema.cohort_inclusion_stats WHERE cohort_definit
 DELETE FROM @results_database_schema.cohort_summary_stats WHERE cohort_definition_id = @cohort_definition_id;
 DELETE FROM @results_database_schema.cohort_censor_stats WHERE cohort_definition_id = @cohort_definition_id;
 
-INSERT INTO @results_database_schema.cohort (cohort_definition_id, subject_id, cohort_start_date, cohort_end_date)
-SELECT @cohort_definition_id, subject_id, cohort_start_date, cohort_end_date
-FROM @results_database_schema.cohort_cache cc
-WHERE cc.design_hash = @design_hash;
-
 INSERT INTO @results_database_schema.cohort_inclusion_result (cohort_definition_id, mode_id, inclusion_rule_mask, person_count)
 SELECT @cohort_definition_id, mode_id, inclusion_rule_mask, person_count
 FROM @results_database_schema.cohort_inclusion_result_cache irc

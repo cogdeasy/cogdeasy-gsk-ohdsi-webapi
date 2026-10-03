@@ -40,8 +40,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.google.common.collect.ImmutableList;
 import com.odysseusinc.arachne.commons.types.DBMSType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -55,6 +57,11 @@ import static org.ohdsi.webapi.Constants.Params.*;
  */
 public class GenerateCohortTasklet extends CancelableTasklet implements StoppableTasklet {
   private final static String copyGenerationIntoCohortTableSql = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/copyGenerationIntoCohortTableSql.sql");
+  private final static String copyGenerationSliceIntoCohortTableSql = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/copyGenerationSliceIntoCohortTableSql.sql");
+
+  // Copying a large cohort from the cache in one INSERT ... SELECT holds a long-running statement on the
+  // results schema. Copy the cohort rows in COPY_SLICES smaller statements, partitioned on subject_id.
+  private static final int COPY_SLICES = 4;
 
   private final GenerationCacheHelper generationCacheHelper;
   private final CohortDefinitionRepository cohortDefinitionRepository;
@@ -197,6 +204,15 @@ public class GenerateCohortTasklet extends CancelableTasklet implements Stoppabl
               new String[] { RESULTS_DATABASE_SCHEMA, COHORT_DEFINITION_ID, DESIGN_HASH },
               new String[] { targetSchema, cohortDefinition.getId().toString(), res.getIdentifier().toString() });
       sql = SqlTranslate.translateSql(sql, source.getSourceDialect());
-      return SqlSplit.splitSql(sql);
+      List<String> statements = new ArrayList<>(Arrays.asList(SqlSplit.splitSql(sql)));
+
+      for (int slice = 1; slice <= COPY_SLICES; slice++) {
+          String sliceSql = SqlRender.renderSql(copyGenerationSliceIntoCohortTableSql,
+                  new String[] { RESULTS_DATABASE_SCHEMA, COHORT_DEFINITION_ID, DESIGN_HASH, "slice_count", "slice" },
+                  new String[] { targetSchema, cohortDefinition.getId().toString(), res.getIdentifier().toString(),
+                          String.valueOf(COPY_SLICES), String.valueOf(slice) });
+          statements.addAll(Arrays.asList(SqlSplit.splitSql(SqlTranslate.translateSql(sliceSql, source.getSourceDialect()))));
+      }
+      return statements.toArray(new String[0]);
   }
 }
