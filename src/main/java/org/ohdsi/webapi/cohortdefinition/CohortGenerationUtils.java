@@ -42,7 +42,7 @@ public class CohortGenerationUtils {
       jdbcTemplate.update(translatedInsertSql, new Object[] { cohortDef.getId(), designHash, i, r.name, r.description});
     }
   }
-  
+
   public static String[] buildGenerationSql(CohortGenerationRequest request) {
 
     Source source = request.getSource();
@@ -65,18 +65,18 @@ public class CohortGenerationUtils {
     String expressionSql = expressionQueryBuilder.buildExpressionQuery(request.getExpression(), options);
     expressionSql = SqlRender.renderSql(
       expressionSql,
-      new String[] {"target_cohort_table", 
-        "results_database_schema.cohort_inclusion_result", 
-        "results_database_schema.cohort_inclusion_stats", 
-        "results_database_schema.cohort_summary_stats", 
+      new String[] {"target_cohort_table",
+        "results_database_schema.cohort_inclusion_result",
+        "results_database_schema.cohort_inclusion_stats",
+        "results_database_schema.cohort_summary_stats",
         "results_database_schema.cohort_censor_stats",
         "results_database_schema.cohort_inclusion"
       },
       new String[] {
-        COHORT_CACHE, 
-        "@target_database_schema." + COHORT_INCLUSION_RESULT_CACHE, 
-        "@target_database_schema." + COHORT_INCLUSION_STATS_CACHE, 
-        "@target_database_schema." + COHORT_SUMMARY_STATS_CACHE, 
+        COHORT_CACHE,
+        "@target_database_schema." + COHORT_INCLUSION_RESULT_CACHE,
+        "@target_database_schema." + COHORT_INCLUSION_STATS_CACHE,
+        "@target_database_schema." + COHORT_SUMMARY_STATS_CACHE,
         "@target_database_schema." + COHORT_CENSOR_STATS_CACHE,
         "@target_database_schema.cohort_inclusion"
       }
