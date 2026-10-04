@@ -213,6 +213,8 @@ public class GenerateCohortTasklet extends CancelableTasklet implements Stoppabl
                           String.valueOf(COPY_SLICES), String.valueOf(slice) });
           statements.addAll(Arrays.asList(SqlSplit.splitSql(SqlTranslate.translateSql(sliceSql, source.getSourceDialect()))));
       }
+      log.debug("Cohort definition {}: prepared {} copy statements for design hash {}",
+              cohortDefinition.getId(), statements.size(), res.getIdentifier());
       return statements.toArray(new String[0]);
   }
 }
