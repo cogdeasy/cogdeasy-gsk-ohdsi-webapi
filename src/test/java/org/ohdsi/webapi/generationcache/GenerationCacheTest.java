@@ -55,7 +55,7 @@ public class GenerationCacheTest extends AbstractDatabaseTest {
     private static final String RESULT_SCHEMA_NAME = "results";
     private static final String SOURCE_KEY = "Embedded_PG";
     private static boolean isSetup = false;
-    private int cohortId;  // will be set to the test cohort for each test excution
+    private int cohortId;  // will be set to the test cohort for each test execution
     
     @Autowired
     private GenerationCacheService generationCacheService;
