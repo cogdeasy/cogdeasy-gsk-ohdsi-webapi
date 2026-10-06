@@ -38,6 +38,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.BatchUpdateException;
 import java.sql.SQLException;
 import java.util.ArrayDeque;
 import java.util.Collections;
@@ -61,21 +62,24 @@ import org.ohdsi.webapi.vocabulary.ConceptRecommendedNotInstalledException;
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericExceptionMapper.class);
     private static final String CONFLICT_MESSAGE = "The request conflicts with existing data";
-    // PostgreSQL unique-violation detail, e.g. Key (concept_set_name)=(Diabetes) already exists.
-    private static final Pattern DUPLICATE_KEY_DETAIL = Pattern.compile("Key \\((.+?)\\)=\\((.*)\\) already exists", Pattern.DOTALL);
+    // PostgreSQL unique violation, e.g.
+    // ERROR: duplicate key value violates unique constraint "uq_cs_name"
+    //   Detail: Key (concept_set_name)=(Diabetes) already exists.
+    private static final Pattern UNIQUE_CONSTRAINT = Pattern.compile("unique constraint \"([^\"]+)\"");
+    private static final Pattern DUPLICATE_KEY_DETAIL = Pattern.compile("Key \\(([^)]+)\\)=\\((.*)\\) already exists");
     private static final int MAX_CAUSES = 32;
     // Unique name constraints added by V2.8.0.20190424150601__add-unique-name-constraint-to-entities.sql
-    private static final Map<String, String> UNIQUE_NAME_CONSTRAINTS;
+    private static final Map<String, UniqueName> UNIQUE_NAME_CONSTRAINTS;
     static {
-        Map<String, String> constraints = new HashMap<>();
-        constraints.put("uq_cs_name", "Concept set");
-        constraints.put("uq_cd_name", "Cohort definition");
-        constraints.put("uq_cc_name", "Characterization");
-        constraints.put("uq_fe_name", "Feature analysis");
-        constraints.put("uq_pw_name", "Pathway analysis");
-        constraints.put("uq_ir_name", "Incidence rate analysis");
-        constraints.put("uq_es_name", "Estimation analysis");
-        constraints.put("uq_pd_name", "Prediction analysis");
+        Map<String, UniqueName> constraints = new HashMap<>();
+        constraints.put("uq_cs_name", new UniqueName("Concept set", "concept_set_name"));
+        constraints.put("uq_cd_name", new UniqueName("Cohort definition", "name"));
+        constraints.put("uq_cc_name", new UniqueName("Characterization", "name"));
+        constraints.put("uq_fe_name", new UniqueName("Feature analysis", "name"));
+        constraints.put("uq_pw_name", new UniqueName("Pathway analysis", "name"));
+        constraints.put("uq_ir_name", new UniqueName("Incidence rate analysis", "name"));
+        constraints.put("uq_es_name", new UniqueName("Estimation analysis", "name"));
+        constraints.put("uq_pd_name", new UniqueName("Prediction analysis", "name"));
         UNIQUE_NAME_CONSTRAINTS = Collections.unmodifiableMap(constraints);
     }
 
@@ -141,39 +145,50 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
      * clashing name (the value the caller submitted); it never returns database text.
      */
     private String getConflictMessage(DataIntegrityViolationException ex) {
+        Iterable<Throwable> causes = getCauses(ex);
         String constraintName = null;
-        String duplicatedName = null;
-        String entity = null;
-        for (Throwable cause : getCauses(ex)) {
-            if (constraintName == null && cause instanceof ConstraintViolationException) {
+        for (Throwable cause : causes) {
+            if (cause instanceof ConstraintViolationException && ((ConstraintViolationException) cause).getConstraintName() != null) {
                 constraintName = ((ConstraintViolationException) cause).getConstraintName();
+                break;
             }
-            String message = cause.getMessage();
-            if (message == null) {
-                continue;
-            }
-            if (entity == null) {
-                entity = UNIQUE_NAME_CONSTRAINTS.entrySet().stream()
-                        .filter(c -> message.contains(c.getKey()))
-                        .map(Map.Entry::getValue)
-                        .findFirst().orElse(null);
-            }
-            if (duplicatedName == null && cause instanceof SQLException) {
-                Matcher detail = DUPLICATE_KEY_DETAIL.matcher(message);
-                if (detail.find()) {
-                    duplicatedName = detail.group(2);
+        }
+        if (constraintName == null) {
+            for (Throwable cause : causes) {
+                String violated = getViolatedConstraint(cause);
+                if (violated != null) {
+                    constraintName = violated;
+                    break;
                 }
             }
         }
-        if (constraintName != null) {
-            entity = UNIQUE_NAME_CONSTRAINTS.get(constraintName.toLowerCase(Locale.ROOT));
-        }
-        if (entity == null) {
+        UniqueName uniqueName = constraintName == null ? null : UNIQUE_NAME_CONSTRAINTS.get(constraintName.toLowerCase(Locale.ROOT));
+        if (uniqueName == null) {
             return CONFLICT_MESSAGE;
         }
+        String duplicatedName = null;
+        for (Throwable cause : causes) {
+            if (constraintName.equalsIgnoreCase(getViolatedConstraint(cause))) {
+                Matcher detail = DUPLICATE_KEY_DETAIL.matcher(cause.getMessage());
+                if (detail.find() && uniqueName.column.equals(detail.group(1))) {
+                    duplicatedName = detail.group(2);
+                    break;
+                }
+            }
+        }
         return duplicatedName == null
-                ? String.format("%s name is already in use", entity)
-                : String.format("%s name '%s' is already in use", entity, duplicatedName);
+                ? String.format("%s name is already in use", uniqueName.entity)
+                : String.format("%s name '%s' is already in use", uniqueName.entity, duplicatedName);
+    }
+
+    // The unique constraint a database error reports. A BatchUpdateException message also echoes the
+    // statement, so only the server error itself (its next exception) is read.
+    private String getViolatedConstraint(Throwable cause) {
+        if (!(cause instanceof SQLException) || cause instanceof BatchUpdateException || cause.getMessage() == null) {
+            return null;
+        }
+        Matcher constraint = UNIQUE_CONSTRAINT.matcher(cause.getMessage());
+        return constraint.find() ? constraint.group(1) : null;
     }
 
     // The exception, its causes and any chained SQLExceptions, guarded against cycles.
@@ -202,5 +217,15 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
             return ite.getTargetException();
         }
         return null;
+    }
+
+    private static final class UniqueName {
+        private final String entity;
+        private final String column;
+
+        private UniqueName(String entity, String column) {
+            this.entity = entity;
+            this.column = column;
+        }
     }
 }

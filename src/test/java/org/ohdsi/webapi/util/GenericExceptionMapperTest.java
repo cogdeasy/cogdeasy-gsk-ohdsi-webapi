@@ -57,6 +57,37 @@ public class GenericExceptionMapperTest {
     }
 
     @Test
+    public void batchNamesTheValueOfTheReportedConstraint() {
+        BatchUpdateException batch = new BatchUpdateException("Batch entry 0 was aborted", new int[0]);
+        SQLException other = sqlException("uq_cd_name", "name", "Other");
+        other.setNextException(sqlException("uq_cs_name", "concept_set_name", "Diabetes"));
+        batch.setNextException(other);
+        DataIntegrityViolationException ex = new DataIntegrityViolationException("could not execute batch",
+                new ConstraintViolationException("could not execute batch", batch, "uq_cs_name"));
+
+        assertConflict("Concept set name 'Diabetes' is already in use", mapper.toResponse(ex));
+    }
+
+    @Test
+    public void knownConstraintNameInsideAnotherValueIsNotAClash() {
+        DataIntegrityViolationException ex = new DataIntegrityViolationException("could not execute statement",
+                new RuntimeException("constraint violation", sqlException("sec_role_name_uq", "name", "uq_cs_name")));
+
+        assertConflict(GENERIC_CONFLICT, mapper.toResponse(ex));
+    }
+
+    @Test
+    public void nameContainingAlreadyExistsDoesNotPullInLaterDetail() {
+        SQLException sql = new SQLException("ERROR: duplicate key value violates unique constraint \"uq_cs_name\"\n"
+                + "  Detail: Key (concept_set_name)=(Diabetes) already exists) already exists.\n"
+                + "  Where: Key (concept_set_id)=(42) already exists", "23505");
+        DataIntegrityViolationException ex = new DataIntegrityViolationException("could not execute statement",
+                new ConstraintViolationException("could not execute statement", sql, "uq_cs_name"));
+
+        assertConflict("Concept set name 'Diabetes) already exists' is already in use", mapper.toResponse(ex));
+    }
+
+    @Test
     public void knownConstraintWithoutDetailStillNamesTheEntity() {
         DataIntegrityViolationException ex = new DataIntegrityViolationException("could not execute statement",
                 new RuntimeException("constraint violation",
