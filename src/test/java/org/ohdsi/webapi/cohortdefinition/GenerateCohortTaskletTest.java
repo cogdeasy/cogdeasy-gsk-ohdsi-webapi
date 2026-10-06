@@ -23,6 +23,7 @@ import org.springframework.batch.core.scope.context.StepContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -78,6 +79,12 @@ public class GenerateCohortTaskletTest extends AbstractDatabaseTest {
 
     @Autowired
     private SourceService sourceService;
+
+    @Value("${datasource.username}")
+    private String datasourceUsername;
+
+    @Value("${datasource.password}")
+    private String datasourcePassword;
 
     @Value("${datasource.ohdsi.schema}")
     private String ohdsiSchema;
@@ -218,9 +225,11 @@ public class GenerateCohortTaskletTest extends AbstractDatabaseTest {
         s.setSourceName("Embedded PG GSK-58");
         s.setSourceKey(SOURCE_KEY);
         s.setSourceDialect(DBMSType.POSTGRESQL.getOhdsiDB());
-        s.setSourceConnection(getDataSource().getConnection().getMetaData().getURL());
-        s.setUsername("postgres");
-        s.setPassword("postgres");
+        try (Connection connection = getDataSource().getConnection()) {
+            s.setSourceConnection(connection.getMetaData().getURL());
+        }
+        s.setUsername(datasourceUsername);
+        s.setPassword(datasourcePassword);
         s.setKrbAuthMethod(KerberosAuthMechanism.PASSWORD);
         s.setDaimons(Arrays.asList(
                 daimon(s, SourceDaimon.DaimonType.CDM, "cdm"),
