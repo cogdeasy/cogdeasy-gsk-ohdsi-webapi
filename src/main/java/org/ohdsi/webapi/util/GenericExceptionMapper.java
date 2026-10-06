@@ -39,9 +39,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.sql.SQLException;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -57,8 +59,10 @@ import org.ohdsi.webapi.vocabulary.ConceptRecommendedNotInstalledException;
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericExceptionMapper.class);
     static final String DUPLICATE_RECORD_MESSAGE = "A record with this name already exists.";
+    static final String CONFLICT_MESSAGE = "The request conflicts with existing data.";
     private static final String DETAIL = "Detail: ";
     private static final Pattern DUPLICATE_KEY_DETAIL = Pattern.compile("^Key \\(([^,()]+)\\)=\\((.*)\\) already exists\\.?$");
+    private static final Pattern NAME_COLUMN = Pattern.compile("(?i)^\"?[a-z_]*name\"?$");
     private static final int MAX_ECHOED_VALUE_LENGTH = 255;
 
     @Override
@@ -123,17 +127,24 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
     }
 
     private static String getConflictMessage(Throwable ex) {
-        String detail = findDetail(ex);
-        if (detail != null) {
+        List<String> details = findDetails(ex);
+        for (String detail : details) {
             Matcher matcher = DUPLICATE_KEY_DETAIL.matcher(detail);
-            if (matcher.matches() && matcher.group(2).length() <= MAX_ECHOED_VALUE_LENGTH) {
-                return "A record with the name \"" + matcher.group(2) + "\" already exists.";
+            if (matcher.matches()) {
+                String column = matcher.group(1).trim();
+                String value = matcher.group(2);
+                if (NAME_COLUMN.matcher(column).matches() && value.length() <= MAX_ECHOED_VALUE_LENGTH) {
+                    return "A record with the name \"" + value + "\" already exists.";
+                }
+                return DUPLICATE_RECORD_MESSAGE;
             }
         }
-        return DUPLICATE_RECORD_MESSAGE;
+        // A Detail that is not a duplicate key (e.g. a foreign key) must not be reported as a duplicate name
+        return details.isEmpty() ? DUPLICATE_RECORD_MESSAGE : CONFLICT_MESSAGE;
     }
 
-    private static String findDetail(Throwable ex) {
+    private static List<String> findDetails(Throwable ex) {
+        List<String> details = new ArrayList<>();
         Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
         Deque<Throwable> pending = new ArrayDeque<>();
         pending.add(ex);
@@ -144,7 +155,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
             }
             String detail = extractDetail(current.getMessage());
             if (detail != null) {
-                return detail;
+                details.add(detail);
             }
             if (current.getCause() != null) {
                 pending.add(current.getCause());
@@ -153,7 +164,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
                 pending.add(((SQLException) current).getNextException());
             }
         }
-        return null;
+        return details;
     }
 
     private static String extractDetail(String message) {

@@ -57,10 +57,25 @@ public class GenericExceptionMapperTest {
     }
 
     @Test
-    public void integrityViolationWithNonDuplicateDetailFallsBackToSafeMessage() {
+    public void foreignKeyViolationIsNotReportedAsDuplicateName() {
         assertSafeConflict(new DataIntegrityViolationException("could not execute statement",
                 new SQLException("ERROR: insert or update on table \"concept_set_item\" violates foreign key constraint"
                         + " \"fk_csi_cs\"\n  Detail: Key (concept_set_id)=(42) is not present in table \"concept_set\".")),
+                GenericExceptionMapper.CONFLICT_MESSAGE);
+    }
+
+    @Test
+    public void duplicateDetailNestedBelowAnotherDetailIsFound() {
+        assertSafeConflict(new DataIntegrityViolationException("Detail: something else",
+                new SQLException(RAW_DB_TEXT + "\n  Detail: Key (concept_set_name)=(Diabetes) already exists.")),
+                "A record with the name \"Diabetes\" already exists.");
+    }
+
+    @Test
+    public void duplicateValueOfNonNameColumnIsNotEchoed() {
+        assertSafeConflict(new DataIntegrityViolationException("could not execute statement",
+                new SQLException("ERROR: duplicate key value violates unique constraint \"source_key_uq\""
+                        + "\n  Detail: Key (source_key)=(INTERNAL_KEY) already exists.")),
                 GenericExceptionMapper.DUPLICATE_RECORD_MESSAGE);
     }
 
