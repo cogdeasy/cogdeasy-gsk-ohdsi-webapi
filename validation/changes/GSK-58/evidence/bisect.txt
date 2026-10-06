@@ -1,0 +1,37 @@
+endpoint checks:
+37e80665: [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+v2.15.1 exit=0
+11a4212f: [ERROR] Tests run: 5, Failures: 4, Errors: 0, Skipped: 0
+v2.15.1-si.3 exit=1
+Bisecting: 3 revisions left to test after this (roughly 2 steps)
+[7e26a94defd37758cbde8c57d7613a32f96999b5] chore(cohortdefinition): strip trailing whitespace in CohortGenerationUtils
+running  '/home/ubuntu/gsk58/bisect-check.sh'
+7e26a94d: [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+Bisecting: 1 revision left to test after this (roughly 1 step)
+[7148071746b9aaeb072387a71708edc70f81e5c1] chore(cohortdefinition): debug-log the number of cohort copy statements
+running  '/home/ubuntu/gsk58/bisect-check.sh'
+71480717: [ERROR] Tests run: 5, Failures: 4, Errors: 0, Skipped: 0
+Bisecting: 0 revisions left to test after this (roughly 0 steps)
+[25937aeec45ae2a4453887fe29a23cdf308dda7f] perf(cohortdefinition): copy cached cohort rows into the cohort table in slices
+running  '/home/ubuntu/gsk58/bisect-check.sh'
+25937aee: [ERROR] Tests run: 5, Failures: 4, Errors: 0, Skipped: 0
+25937aeec45ae2a4453887fe29a23cdf308dda7f is the first bad commit
+commit 25937aeec45ae2a4453887fe29a23cdf308dda7f
+Author: SI Delivery Team <delivery@si-partner.example>
+Date:   Sat Oct 3 16:22:00 2026 +0100
+
+    perf(cohortdefinition): copy cached cohort rows into the cohort table in slices
+    
+    Large cohorts were copied from cohort_cache into the cohort table with a single
+    INSERT ... SELECT, holding one long-running statement on the results schema.
+    Split the cohort row copy into COPY_SLICES statements partitioned on subject_id.
+    Inclusion, summary and censor stats are small and still copied in one statement.
+
+ .../webapi/cohortdefinition/GenerateCohortTasklet.java | 18 +++++++++++++++++-
+ .../sql/copyGenerationIntoCohortTableSql.sql           |  5 -----
+ .../sql/copyGenerationSliceIntoCohortTableSql.sql      |  5 +++++
+ 3 files changed, 22 insertions(+), 6 deletions(-)
+ create mode 100644 src/main/resources/resources/cohortdefinition/sql/copyGenerationSliceIntoCohortTableSql.sql
+bisect found first bad commitPrevious HEAD position was 25937aee perf(cohortdefinition): copy cached cohort rows into the cohort table in slices
+HEAD is now at 11a4212f docs: SI release notes for 2.15.1-si.3
+total elapsed: 135s
