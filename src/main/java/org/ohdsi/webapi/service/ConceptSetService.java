@@ -42,6 +42,7 @@ import org.ohdsi.webapi.conceptset.ConceptSetGenerationInfoRepository;
 import org.ohdsi.webapi.conceptset.ConceptSetItem;
 import org.ohdsi.webapi.conceptset.dto.ConceptSetVersionFullDTO;
 import org.ohdsi.webapi.conceptset.annotation.ConceptSetAnnotation;
+import org.ohdsi.webapi.exception.BadRequestAtlasException;
 import org.ohdsi.webapi.exception.ConceptNotExistException;
 import org.ohdsi.webapi.security.PermissionService;
 import org.ohdsi.webapi.service.annotations.SearchDataTransformer;
@@ -150,6 +151,7 @@ public class ConceptSetService extends AbstractDaoService implements HasTags<Int
     private boolean defaultGlobalReadPermissions;
 
     public static final String COPY_NAME = "copyName";
+    public static final String CONCEPT_SET_NAME_EXISTS_MESSAGE = "A concept set with this name already exists. Please choose a different name.";
 
     /**
      * Get the concept set based in the identifier
@@ -498,6 +500,7 @@ public class ConceptSetService extends AbstractDaoService implements HasTags<Int
     @CacheEvict(cacheNames = CachingSetup.CONCEPT_SET_LIST_CACHE, allEntries = true)
 		public ConceptSetDTO createConceptSet(ConceptSetDTO conceptSetDTO) {
 
+        checkNameIsUnique(0, conceptSetDTO.getName());
         UserEntity user = userRepository.findByLogin(security.getSubject());
         ConceptSet conceptSet = conversionService.convert(conceptSetDTO, ConceptSet.class);
         ConceptSet updated = new ConceptSet();
@@ -558,11 +561,18 @@ public class ConceptSetService extends AbstractDaoService implements HasTags<Int
         if (updated == null) {
             throw new Exception("Concept Set does not exist.");
         }
+        checkNameIsUnique(id, conceptSetDTO.getName());
 
         saveVersion(id);
 
         ConceptSet conceptSet = conversionService.convert(conceptSetDTO, ConceptSet.class);
         return conversionService.convert(updateConceptSet(updated, conceptSet), ConceptSetDTO.class);
+    }
+
+    private void checkNameIsUnique(int id, String name) {
+        if (getConceptSetRepository().getCountCSetWithSameName(id, name) > 0) {
+            throw new BadRequestAtlasException(CONCEPT_SET_NAME_EXISTS_MESSAGE);
+        }
     }
 
     private ConceptSet updateConceptSet(ConceptSet dst, ConceptSet src) {

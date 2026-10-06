@@ -5,10 +5,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ohdsi.webapi.AbstractDatabaseTest;
 import org.ohdsi.webapi.conceptset.ConceptSetRepository;
+import org.ohdsi.webapi.exception.BadRequestAtlasException;
 import org.ohdsi.webapi.service.ConceptSetService;
 import org.ohdsi.webapi.service.dto.ConceptSetDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.ohdsi.webapi.service.ConceptSetService.CONCEPT_SET_NAME_EXISTS_MESSAGE;
 import static org.ohdsi.webapi.service.ConceptSetService.COPY_NAME;
 import static org.ohdsi.webapi.test.TestConstants.NEW_TEST_ENTITY;
 
@@ -39,7 +43,13 @@ public class ConceptSetEntityTest extends AbstractDatabaseTest implements TestCr
     @Override
     public void shouldNotCreateEntityWithDuplicateName() {
 
-        TestCreate.super.shouldNotCreateEntityWithDuplicateName();
+        // Concept sets are rejected by the service-side name check before the uq_cs_name constraint is reached
+        try {
+            createEntity(NEW_TEST_ENTITY);
+            fail();
+        } catch (BadRequestAtlasException e) {
+            assertEquals(CONCEPT_SET_NAME_EXISTS_MESSAGE, e.getMessage());
+        }
     }
 
     @Test
