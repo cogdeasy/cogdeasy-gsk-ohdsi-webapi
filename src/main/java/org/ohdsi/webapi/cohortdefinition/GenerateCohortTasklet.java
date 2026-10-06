@@ -60,7 +60,8 @@ public class GenerateCohortTasklet extends CancelableTasklet implements Stoppabl
   private final static String copyGenerationSliceIntoCohortTableSql = ResourceHelper.GetResourceAsString("/resources/cohortdefinition/sql/copyGenerationSliceIntoCohortTableSql.sql");
 
   // Copying a large cohort from the cache in one INSERT ... SELECT holds a long-running statement on the
-  // results schema. Copy the cohort rows in COPY_SLICES smaller statements, partitioned on subject_id.
+  // results schema. Copy the cohort rows in COPY_SLICES smaller statements, partitioned on subject_id:
+  // slice k copies the rows with ABS(subject_id % COPY_SLICES) = k, for k = 0 .. COPY_SLICES - 1.
   private static final int COPY_SLICES = 4;
 
   private final GenerationCacheHelper generationCacheHelper;
@@ -206,7 +207,7 @@ public class GenerateCohortTasklet extends CancelableTasklet implements Stoppabl
       sql = SqlTranslate.translateSql(sql, source.getSourceDialect());
       List<String> statements = new ArrayList<>(Arrays.asList(SqlSplit.splitSql(sql)));
 
-      for (int slice = 1; slice <= COPY_SLICES; slice++) {
+      for (int slice = 0; slice < COPY_SLICES; slice++) {
           String sliceSql = SqlRender.renderSql(copyGenerationSliceIntoCohortTableSql,
                   new String[] { RESULTS_DATABASE_SCHEMA, COHORT_DEFINITION_ID, DESIGN_HASH, "slice_count", "slice" },
                   new String[] { targetSchema, cohortDefinition.getId().toString(), res.getIdentifier().toString(),
