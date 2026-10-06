@@ -19,6 +19,7 @@ import org.ohdsi.webapi.exception.BadRequestAtlasException;
 import org.ohdsi.webapi.exception.ConceptNotExistException;
 import org.ohdsi.webapi.exception.ConversionAtlasException;
 import org.ohdsi.webapi.exception.UserException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.apache.shiro.authz.UnauthorizedException;
@@ -37,7 +38,18 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.SQLException;
+import java.util.ArrayDeque;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.ohdsi.webapi.vocabulary.ConceptRecommendedNotInstalledException;
 
 /**
@@ -48,7 +60,24 @@ import org.ohdsi.webapi.vocabulary.ConceptRecommendedNotInstalledException;
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericExceptionMapper.class);
-    private final String DETAIL = "Detail: ";
+    private static final String CONFLICT_MESSAGE = "The request conflicts with existing data";
+    // PostgreSQL unique-violation detail, e.g. Key (concept_set_name)=(Diabetes) already exists.
+    private static final Pattern DUPLICATE_KEY_DETAIL = Pattern.compile("Key \\((.+?)\\)=\\((.*)\\) already exists", Pattern.DOTALL);
+    private static final int MAX_CAUSES = 32;
+    // Unique name constraints added by V2.8.0.20190424150601__add-unique-name-constraint-to-entities.sql
+    private static final Map<String, String> UNIQUE_NAME_CONSTRAINTS;
+    static {
+        Map<String, String> constraints = new HashMap<>();
+        constraints.put("uq_cs_name", "Concept set");
+        constraints.put("uq_cd_name", "Cohort definition");
+        constraints.put("uq_cc_name", "Characterization");
+        constraints.put("uq_fe_name", "Feature analysis");
+        constraints.put("uq_pw_name", "Pathway analysis");
+        constraints.put("uq_ir_name", "Incidence rate analysis");
+        constraints.put("uq_es_name", "Estimation analysis");
+        constraints.put("uq_pd_name", "Prediction analysis");
+        UNIQUE_NAME_CONSTRAINTS = Collections.unmodifiableMap(constraints);
+    }
 
     @Override
     public Response toResponse(Throwable ex) {
@@ -58,9 +87,7 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
         Status responseStatus;
         if (ex instanceof DataIntegrityViolationException) {
             responseStatus = Status.CONFLICT;
-            String cause = ex.getCause().getCause().getMessage();
-            cause = cause.substring(cause.indexOf(DETAIL) + DETAIL.length());
-            ex = new RuntimeException(cause);
+            ex = new RuntimeException(getConflictMessage((DataIntegrityViolationException) ex));
         } else if (ex instanceof UnauthorizedException || ex instanceof ForbiddenException) {
             responseStatus = Status.FORBIDDEN;
         } else if (ex instanceof NotFoundException) {
@@ -107,6 +134,66 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
                 .entity(errorMessage)
                 .type(MediaType.APPLICATION_JSON)
                 .build();
+    }
+
+    /**
+     * Client-safe message for a constraint violation. For a duplicate entity name it names the
+     * clashing name (the value the caller submitted); it never returns database text.
+     */
+    private String getConflictMessage(DataIntegrityViolationException ex) {
+        String constraintName = null;
+        String duplicatedName = null;
+        String entity = null;
+        for (Throwable cause : getCauses(ex)) {
+            if (constraintName == null && cause instanceof ConstraintViolationException) {
+                constraintName = ((ConstraintViolationException) cause).getConstraintName();
+            }
+            String message = cause.getMessage();
+            if (message == null) {
+                continue;
+            }
+            if (entity == null) {
+                entity = UNIQUE_NAME_CONSTRAINTS.entrySet().stream()
+                        .filter(c -> message.contains(c.getKey()))
+                        .map(Map.Entry::getValue)
+                        .findFirst().orElse(null);
+            }
+            if (duplicatedName == null && cause instanceof SQLException) {
+                Matcher detail = DUPLICATE_KEY_DETAIL.matcher(message);
+                if (detail.find()) {
+                    duplicatedName = detail.group(2);
+                }
+            }
+        }
+        if (constraintName != null) {
+            entity = UNIQUE_NAME_CONSTRAINTS.get(constraintName.toLowerCase(Locale.ROOT));
+        }
+        if (entity == null) {
+            return CONFLICT_MESSAGE;
+        }
+        return duplicatedName == null
+                ? String.format("%s name is already in use", entity)
+                : String.format("%s name '%s' is already in use", entity, duplicatedName);
+    }
+
+    // The exception, its causes and any chained SQLExceptions, guarded against cycles.
+    private Iterable<Throwable> getCauses(Throwable ex) {
+        Set<Throwable> causes = new LinkedHashSet<>();
+        Deque<Throwable> pending = new ArrayDeque<>();
+        pending.add(ex);
+        while (!pending.isEmpty() && causes.size() < MAX_CAUSES) {
+            Throwable current = pending.poll();
+            if (!causes.add(current)) {
+                continue;
+            }
+            if (current.getCause() != null) {
+                pending.add(current.getCause());
+            }
+            if (current instanceof SQLException && ((SQLException) current).getNextException() != null) {
+                pending.add(((SQLException) current).getNextException());
+            }
+        }
+        return causes;
     }
 
     private Throwable getThrowable(UndeclaredThrowableException ex) {

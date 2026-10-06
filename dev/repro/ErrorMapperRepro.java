@@ -43,7 +43,8 @@ public class ErrorMapperRepro {
         try {
             Response response = new GenericExceptionMapper().toResponse(ex);
             String message = ((ErrorMessage) response.getEntity()).getPayload().getMessage();
-            boolean leaks = message != null && (message.contains("duplicate key") || message.contains("constraint \""));
+            boolean leaks = message != null && (message.contains("duplicate key") || message.contains("constraint \"")
+                    || message.contains("Key ("));
             safe = response.getStatus() == 409 && !leaks;
             outcome = response.getStatus() + " \"" + message + "\"" + (leaks ? "  <- raw database text" : "");
         } catch (RuntimeException e) {
