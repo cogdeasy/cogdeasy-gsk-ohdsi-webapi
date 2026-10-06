@@ -113,10 +113,10 @@ public class GenerateCohortTaskletTest extends AbstractDatabaseTest {
         assertEquals("people", 830L, countCohort("COUNT(DISTINCT subject_id)"));
     }
 
-    // AC2: no subject is dropped or kept because of its subject_id value (every residue, large ids, single row).
+    // AC2: no subject is dropped or kept because of its subject_id value (every residue, negative and large ids, single row).
     @Test
     public void copiesSubjectsWhateverTheirIdValue() {
-        List<Long> subjects = Arrays.asList(4L, 8L, 12L, 16L, 1L, 2L, 3L, 5L, 2147483648L, 9007199254740992L);
+        List<Long> subjects = Arrays.asList(4L, 8L, 12L, 16L, 1L, 2L, 3L, 5L, -4L, -7L, 2147483648L, 9007199254740992L);
         cacheCohort(subjects);
 
         generate();
