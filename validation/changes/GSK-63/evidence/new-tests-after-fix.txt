@@ -1,0 +1,4 @@
+GSK-63 green run: mvn -B -Pwebapi-postgresql -Dtest=GenerateCohortTaskletTest -DskipITtests test with the fix, JDK 8, 2026-10-07T04:06:21Z
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 22.554 s - in org.ohdsi.webapi.cohortdefinition.GenerateCohortTaskletTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
