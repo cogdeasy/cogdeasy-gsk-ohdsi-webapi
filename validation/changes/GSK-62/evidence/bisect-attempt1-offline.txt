@@ -1,0 +1,59 @@
+Bisecting: 3 revisions left to test after this (roughly 2 steps)
+[7e26a94defd37758cbde8c57d7613a32f96999b5] chore(cohortdefinition): strip trailing whitespace in CohortGenerationUtils
+running  '/home/ubuntu/gsk62/bisect-check.sh'
+7e26a94d: 
+Bisecting: 2 revisions left to test after this (roughly 2 steps)
+[25937aeec45ae2a4453887fe29a23cdf308dda7f] perf(cohortdefinition): copy cached cohort rows into the cohort table in slices
+running  '/home/ubuntu/gsk62/bisect-check.sh'
+25937aee: 
+Bisecting: 2 revisions left to test after this (roughly 2 steps)
+[7148071746b9aaeb072387a71708edc70f81e5c1] chore(cohortdefinition): debug-log the number of cohort copy statements
+running  '/home/ubuntu/gsk62/bisect-check.sh'
+71480717: 
+Bisecting: 2 revisions left to test after this (roughly 2 steps)
+[63abf02b11a52ded5baa57ff0b098c83bae70921] chore(cohortdefinition): remove unused imports from GenerateCohortTasklet
+running  '/home/ubuntu/gsk62/bisect-check.sh'
+63abf02b: 
+Bisecting: 2 revisions left to test after this (roughly 2 steps)
+[af2bbbe534515a7efe8da3c2d84f38338d333271] docs: add SI hand-over notes for WebAPI 2.15.1
+running  '/home/ubuntu/gsk62/bisect-check.sh'
+af2bbbe5: 
+Bisecting: 2 revisions left to test after this (roughly 2 steps)
+[b4883ce791cb08e1c0415b05661ed0013ae03e72] test(generationcache): fix typo in GenerationCacheTest comment
+running  '/home/ubuntu/gsk62/bisect-check.sh'
+b4883ce7: 
+There are only 'skip'ped commits left to test.
+The first bad commit could be any of:
+25937aeec45ae2a4453887fe29a23cdf308dda7f
+7e26a94defd37758cbde8c57d7613a32f96999b5
+63abf02b11a52ded5baa57ff0b098c83bae70921
+7148071746b9aaeb072387a71708edc70f81e5c1
+af2bbbe534515a7efe8da3c2d84f38338d333271
+b4883ce791cb08e1c0415b05661ed0013ae03e72
+11a4212f33abd57c213aa41a7f0a5c2d0097689e
+We cannot bisect more!
+error: bisect run cannot continue any more
+bisect wall time: 5s
+# bad: [11a4212f33abd57c213aa41a7f0a5c2d0097689e] docs: SI release notes for 2.15.1-si.3
+# good: [37e8066595c0d1f00e93b7fba0c31dc73f18f7c4] docs: GxP validation fan-out templates, GSK-1 worked example, evidence-pack and test-engineer skills (#3)
+git bisect start 'v2.15.1-si.3' 'v2.15.1'
+# skip: [7e26a94defd37758cbde8c57d7613a32f96999b5] chore(cohortdefinition): strip trailing whitespace in CohortGenerationUtils
+git bisect skip 7e26a94defd37758cbde8c57d7613a32f96999b5
+# skip: [25937aeec45ae2a4453887fe29a23cdf308dda7f] perf(cohortdefinition): copy cached cohort rows into the cohort table in slices
+git bisect skip 25937aeec45ae2a4453887fe29a23cdf308dda7f
+# skip: [7148071746b9aaeb072387a71708edc70f81e5c1] chore(cohortdefinition): debug-log the number of cohort copy statements
+git bisect skip 7148071746b9aaeb072387a71708edc70f81e5c1
+# skip: [63abf02b11a52ded5baa57ff0b098c83bae70921] chore(cohortdefinition): remove unused imports from GenerateCohortTasklet
+git bisect skip 63abf02b11a52ded5baa57ff0b098c83bae70921
+# skip: [af2bbbe534515a7efe8da3c2d84f38338d333271] docs: add SI hand-over notes for WebAPI 2.15.1
+git bisect skip af2bbbe534515a7efe8da3c2d84f38338d333271
+# skip: [b4883ce791cb08e1c0415b05661ed0013ae03e72] test(generationcache): fix typo in GenerationCacheTest comment
+git bisect skip b4883ce791cb08e1c0415b05661ed0013ae03e72
+# only skipped commits left to test
+# possible first bad commit: [11a4212f33abd57c213aa41a7f0a5c2d0097689e] docs: SI release notes for 2.15.1-si.3
+# possible first bad commit: [b4883ce791cb08e1c0415b05661ed0013ae03e72] test(generationcache): fix typo in GenerationCacheTest comment
+# possible first bad commit: [7148071746b9aaeb072387a71708edc70f81e5c1] chore(cohortdefinition): debug-log the number of cohort copy statements
+# possible first bad commit: [25937aeec45ae2a4453887fe29a23cdf308dda7f] perf(cohortdefinition): copy cached cohort rows into the cohort table in slices
+# possible first bad commit: [7e26a94defd37758cbde8c57d7613a32f96999b5] chore(cohortdefinition): strip trailing whitespace in CohortGenerationUtils
+# possible first bad commit: [63abf02b11a52ded5baa57ff0b098c83bae70921] chore(cohortdefinition): remove unused imports from GenerateCohortTasklet
+# possible first bad commit: [af2bbbe534515a7efe8da3c2d84f38338d333271] docs: add SI hand-over notes for WebAPI 2.15.1

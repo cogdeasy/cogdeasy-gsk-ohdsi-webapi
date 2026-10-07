@@ -8,7 +8,7 @@ Draft change record. Not a signed GxP record.
 | application | OHDSI WebAPI (GSK demo fork) |
 | tier | silver |
 | ticket | https://cog-gtm.atlassian.net/browse/GSK-62 |
-| pull request | `<pending>` |
+| pull request | https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/pull/9 |
 | commits | 4bd2caa6 (validation pack), 9ec90574 (regression tests), 6bc56e8b (fix), `<pending>` (results update) |
 | author | Devin (https://app.devin.ai/sessions/7fc803986df240c895a535aecec1fcdc) |
 | description | Cohort generation on 2.15.1-si.3 silently stored only part of each cohort (cohort #1 on EUNOMIA: 625 of 830). Restores a complete copy from the generation cache to the cohort table, adds regression tests, and drafts the as-built URS for cohort generation. |

@@ -6,7 +6,7 @@ Draft. Not a signed GxP record.
 |---|---|
 | change id | CR-GSK-62 |
 | ticket | https://cog-gtm.atlassian.net/browse/GSK-62 |
-| pull request | `<pending>` |
+| pull request | https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/pull/9 |
 | merge commit | `<pending>` |
 | risk / approach | high, full CSV |
 
@@ -30,7 +30,7 @@ Draft. Not a signed GxP record.
 | 16 | training note | [training-note.md](training-note.md) | draft | |
 | 17 | CI runs (`build`, `tests`, `scan`) | `<pending>` | `<pending>` | n/a |
 | 18 | code review and approval | `<pending>` | `<pending>` | n/a |
-| 19 | audit trail | events so far: session created (gsk-ticket-to-pr / playbook, GSK-62) 2026-10-07; Jira pickup comment 2026-10-07; PR opened `<pending>`; CI runs `<pending>`. QA adds approval and merge after merge (sources: audit-log.md) | open | n/a |
+| 19 | audit trail | events so far: session created (gsk-ticket-to-pr / playbook, GSK-62) 2026-10-07; Jira pickup comment 2026-10-07; PR opened https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/pull/9 2026-10-07; CI runs `<pending>`. QA adds approval and merge after merge (sources: audit-log.md) | open | n/a |
 | 20 | reproduction and SQL evidence | [evidence/](evidence/) (SQL, outputs, bisect, red run); ATLAS screenshots and recordings on the PR | before-fix and after-fix recorded | n/a |
 
 | field | value |

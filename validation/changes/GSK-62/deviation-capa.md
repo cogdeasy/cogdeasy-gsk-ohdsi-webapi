@@ -92,6 +92,11 @@ OQ protocol's expected results were written in this pack. The expected values (8
 ids, etc.) were fixed in the test assertions and taken from the ticket before the run, and no
 expected result was changed after the run.
 
+The first scripted bisect run was invalid: Maven ran offline, a plugin was not cached, and every
+step was skipped (`evidence/bisect-attempt1-offline.txt`). The check was changed to run Maven
+online and the bisect re-run from the start (`evidence/bisect.txt`); no test or expected result
+was changed.
+
 ### Impact
 
 | area | impact | reason |

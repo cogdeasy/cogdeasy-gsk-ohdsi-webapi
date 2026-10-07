@@ -7,7 +7,7 @@ Draft. Not a signed GxP record.
 | field | value |
 |---|---|
 | ticket | [GSK-62](https://cog-gtm.atlassian.net/browse/GSK-62) |
-| pull request | `<pending>` |
+| pull request | https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/pull/9 |
 | application | OHDSI WebAPI (GSK demo fork) |
 | tier | silver |
 | component | `GenerateCohortTasklet` sliced copy of cached cohort rows (`copyGenerationSliceIntoCohortTableSql.sql`) |
