@@ -8,7 +8,7 @@ Draft. Not a signed GxP record.
 | change id | CR-GSK-62 |
 | risk | high (full CSV) |
 | build under test | `6bc56e8b` (fix commit) |
-| environment | GitHub Actions `tests` on the fix PR: `<pending>`; local JDK 8 run; local ATLAS stack |
+| environment | GitHub Actions `tests` on PR #9: https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/actions/runs/37568157926; local JDK 8 run; local ATLAS stack |
 | prerequisites | JDK 8, Maven, profile `webapi-postgresql`; embedded PostgreSQL for unit tests; demo-ops local stack with Eunomia for steps 8-10 |
 
 ## Baseline (before the fix)
@@ -37,7 +37,7 @@ commit. The baseline run of steps 2-6 happened before this protocol existed (see
 | 8 | URS-CG-007 / AC1 | rebuild WAR on the fix, restart local stack, ATLAS: cohort #1 -> Generation -> Generate on EUNOMIA | COMPLETE, People 830, Records 830 | COMPLETE, People 830, Records 830 (`/WebAPI/info` commitId 6bc56e8) | pass | gsk62-after-2-generation-complete.png, gsk62-atlas-generation-after.mp4 (on the PR); evidence/impact-after.txt |
 | 9 | URS-CG-007 / AC1 | re-run `evidence/gsk62-independent-count.sql` | CDM = stored cohort = 830 / 830; every remainder copied; gap 0 | CDM 830 / 830 = stored 830 / 830 = cache 830 / 830; remainders 0-3 all copied; gap 0 | pass | evidence/gsk62-sql-after.txt, evidence/impact-after.txt |
 | 10 | URS-CG-008 | generate cohort #1 a second time in ATLAS | People 830, Records 830 again | People 830, Records 830; 830 rows, 830 distinct; is_valid true | pass | gsk62-after-regen-2-generation-complete.png, gsk62-atlas-generation-after-regen.mp4 (on the PR); evidence/gsk62-sql-after-regen.txt |
-| 11 | - | CI checks on the fix PR | `build`, `tests`, `scan` green; no new scan findings | `<pending>` | `<pending>` | `<pending>` |
+| 11 | - | CI checks on the fix PR | `build`, `tests`, `scan` green; no new scan findings | build, tests, scan, Trivy green; tests 253 run, 249 passed, 0 failures, 0 errors, 4 skipped; scan findings not in the job log | pass (findings `<pending>`) | https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/actions/runs/37568157926 |
 
 ## Deviations
 

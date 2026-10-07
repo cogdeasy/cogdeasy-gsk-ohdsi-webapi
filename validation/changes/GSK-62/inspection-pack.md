@@ -17,11 +17,11 @@ Draft. Not a signed GxP record.
 | 3 | FS / DS delta | [fs-ds-delta.md](fs-ds-delta.md) | draft | |
 | 4 | validation plan delta | [validation-plan-delta.md](validation-plan-delta.md) | draft | |
 | 5 | IQ checklist | [iq-checklist.md](iq-checklist.md) | draft, not executed | |
-| 6 | OQ protocol | [oq-protocol.md](oq-protocol.md) | steps 1-10 executed (pass); step 11 (CI) `<pending>` | |
+| 6 | OQ protocol | [oq-protocol.md](oq-protocol.md) | steps 1-10 executed (pass); step 11 (CI) green, scan findings `<pending>` | |
 | 7 | CSA test record | - | n/a (low risk only) | |
 | 8 | PQ / UAT script | [pq-uat-script.md](pq-uat-script.md) | draft, not executed | |
 | 9 | traceability | [traceability.csv](traceability.csv) | results from local full suite | |
-| 10 | test summary report | [test-summary-report.md](test-summary-report.md) | local results; CI `<pending>` | |
+| 10 | test summary report | [test-summary-report.md](test-summary-report.md) | local results; CI 253 / 249 / 0 / 0 / 4 | |
 | 11 | validation summary report | [validation-summary-report.md](validation-summary-report.md) | draft | |
 | 12 | deviations / CAPA | [deviation-capa.md](deviation-capa.md) | DEV-GSK-62-1, DEV-GSK-62-2 open | |
 | 13 | QA review checklist | [qa-review-checklist.md](qa-review-checklist.md) | draft | |

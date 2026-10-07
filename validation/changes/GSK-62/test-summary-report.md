@@ -7,7 +7,7 @@ Draft. Not a signed GxP record.
 | change id | CR-GSK-62 |
 | risk / approach | high, full CSV |
 | build under test | `6bc56e8b` |
-| CI run | `<pending>` |
+| CI run | https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/actions/runs/37568157926 (`build`, `tests`, `scan`, Trivy green on cca2a5a1; 253 run, 249 passed, 0 failures, 0 errors, 4 skipped) |
 | protocols / records | oq-protocol.md |
 
 ## Results
@@ -38,7 +38,7 @@ Line coverage (JaCoCo): 9762 / 131999, 7.4% (local run)
 
 ## Security scan
 
-`scan` check: `<pending>`, new findings: `<pending>`
+`scan` check: green (https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/actions/runs/37568157926), new findings: `<pending>` (Trivy runs with exit-code 0; counts are in the run summary / code scanning)
 
 ## Conclusion
 
