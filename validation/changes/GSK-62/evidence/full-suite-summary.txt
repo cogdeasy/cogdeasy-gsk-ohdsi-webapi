@@ -1,0 +1,11 @@
+Full suite on 6bc56e8b, local JDK 8, mvn -B -Pwebapi-postgresql test, then python3 dev/ci/summary.py (2026-10-07):
+
+## Tests
+
+| run | passed | failures | errors | skipped |
+|---|---|---|---|---|
+| 253 | 249 | 0 | 0 | 4 |
+
+## Line coverage (JaCoCo)
+
+9762 / 131999 lines, 7.4%

@@ -1,0 +1,18 @@
+ cohort_definition_id |             name             | source_key |       start_time        | status | is_valid | webapi_people | cache_people | gap 
+----------------------+------------------------------+------------+-------------------------+--------+----------+---------------+--------------+-----
+                    1 | Demo new users of diclofenac | EUNOMIA    | 2026-10-07 03:38:56.157 |      2 | t        |           830 |          830 |   0
+(1 row)
+
+ job_execution_id |       start_time        |        end_time         |  status   | exit_code 
+------------------+-------------------------+-------------------------+-----------+-----------
+                2 | 2026-10-07 03:29:57.518 | 2026-10-07 03:29:58.941 | COMPLETED | COMPLETED
+                4 | 2026-10-07 03:38:56.139 | 2026-10-07 03:38:57.467 | COMPLETED | COMPLETED
+(2 rows)
+
+ job_execution_id |       create_time       |       start_time        |        end_time         |  status   | exit_code | cohort_definition_id | source_id | job_author 
+------------------+-------------------------+-------------------------+-------------------------+-----------+-----------+----------------------+-----------+------------
+                2 | 2026-10-07 03:29:57.513 | 2026-10-07 03:29:57.518 | 2026-10-07 03:29:58.941 | COMPLETED | COMPLETED | 1                    | 1         | anonymous
+                4 | 2026-10-07 03:38:56.135 | 2026-10-07 03:38:56.139 | 2026-10-07 03:38:57.467 | COMPLETED | COMPLETED | 1                    | 1         | anonymous
+(2 rows)
+
+{"version":"2.15.1","buildInfo":{"artifactVersion":"WebAPI 2.15.1-SNAPSHOT","build":"NA","timestamp":"Wed Oct 07 03:35:48 UTC 2026","branch":"devin/gsk-62-cohort-count-dropped","commitId":"6bc56e8","atlasRepositoryInfo":{"milestoneId":47,"releaseTag":"*"},"webapiRepositoryInfo":{"milestoneId":49,"releaseTag":"*"}},"configuration":{"security":{"samlActivated":false,"enabled":false,"samlEnabled":false},"plugins":{"atlasgisEnabled":false},"person":{"viewDatesPermitted":false},"heracles":{"smallCellCount":"5"}}}
