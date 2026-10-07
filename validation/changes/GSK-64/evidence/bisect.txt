@@ -26,7 +26,8 @@ Date:   Sat Oct 3 16:22:00 2026 +0100
  .../sql/copyGenerationSliceIntoCohortTableSql.sql      |  5 +++++
  3 files changed, 22 insertions(+), 6 deletions(-)
  create mode 100644 src/main/resources/resources/cohortdefinition/sql/copyGenerationSliceIntoCohortTableSql.sql
-bisect found first bad commitbisect wall time: 130s
+bisect found first bad commit
+bisect wall time: 130s
 # bad: [11a4212f33abd57c213aa41a7f0a5c2d0097689e] docs: SI release notes for 2.15.1-si.3
 # good: [37e8066595c0d1f00e93b7fba0c31dc73f18f7c4] docs: GxP validation fan-out templates, GSK-1 worked example, evidence-pack and test-engineer skills (#3)
 git bisect start 'v2.15.1-si.3' 'v2.15.1'
