@@ -62,7 +62,7 @@ cannot tell:
 
 | type | action | owner | due | status |
 |---|---|---|---|---|
-| correction | Fix the sliced copy (this PR, commit `<pending>`); re-generate every cohort generated since the 2.15.1-si.3 deploy and compare with its baseline; mark affected study outputs not for use until re-generated | | | open |
+| correction | Fix the sliced copy (this PR, commit 2419b469); re-generate every cohort generated since the 2.15.1-si.3 deploy and compare with its baseline; mark affected study outputs not for use until re-generated | | | open |
 | corrective | Regression tests `GenerateCohortTaskletTest` (5) in the normal suite; bisect evidence attached | | | open (this PR) |
 | preventive | Reconcile stored cohort with the computed result before marking a generation valid (G-2); end-to-end generation job test (G-3); per-run generation history with build id (G-4); re-run validated cohort baselines as part of accepting SI releases | | | proposed |
 

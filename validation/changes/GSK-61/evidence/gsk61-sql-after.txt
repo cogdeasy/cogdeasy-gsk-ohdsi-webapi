@@ -1,0 +1,16 @@
+run at 2026-10-07T03:21:24Z against WebAPI build 2419b46
+       source        | people | records 
+---------------------+--------+---------
+ independent_cdm_sql |    830 |     830
+ webapi_cohort_table |    830 |     830
+ webapi_cohort_cache |    830 |     830
+(3 rows)
+
+ subject_id_mod_4 | cached_rows | copied_rows 
+------------------+-------------+-------------
+                0 |         205 |         205
+                1 |         219 |         219
+                2 |         210 |         210
+                3 |         196 |         196
+(4 rows)
+

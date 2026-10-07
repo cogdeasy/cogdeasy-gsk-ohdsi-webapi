@@ -16,10 +16,10 @@ Draft. Not a signed GxP record.
 | URS delta | urs-delta.md (+ urs.md as-built) | draft | |
 | FS / DS delta | fs-ds-delta.md | draft | |
 | IQ | iq-checklist.md | not executed (target environment) | |
-| OQ | oq-protocol.md | `<pending>` | |
+| OQ | oq-protocol.md | steps 1-10 pass; CI `<pending>` | |
 | PQ / UAT | pq-uat-script.md | not executed (R&D scientist) | |
-| traceability | traceability.csv | `<pending>` | |
-| test summary | test-summary-report.md | `<pending>` | |
+| traceability | traceability.csv | complete for local run | |
+| test summary | test-summary-report.md | local results; CI `<pending>` | |
 
 ## Deviations and CAPA
 

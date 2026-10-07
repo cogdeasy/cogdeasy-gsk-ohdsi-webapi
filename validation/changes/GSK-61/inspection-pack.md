@@ -17,11 +17,11 @@ Draft. Not a signed GxP record.
 | 3 | FS / DS delta | [fs-ds-delta.md](fs-ds-delta.md) | draft | |
 | 4 | validation plan delta | [validation-plan-delta.md](validation-plan-delta.md) | draft | |
 | 5 | IQ checklist | [iq-checklist.md](iq-checklist.md) | draft, not executed | |
-| 6 | OQ protocol | [oq-protocol.md](oq-protocol.md) | `<pending>` | |
+| 6 | OQ protocol | [oq-protocol.md](oq-protocol.md) | steps 1-10 executed (pass); step 11 (CI) `<pending>` | |
 | 7 | CSA test record | - | n/a (low risk only) | |
 | 8 | PQ / UAT script | [pq-uat-script.md](pq-uat-script.md) | draft, not executed | |
-| 9 | traceability | [traceability.csv](traceability.csv) | `<pending>` | |
-| 10 | test summary report | [test-summary-report.md](test-summary-report.md) | `<pending>` | |
+| 9 | traceability | [traceability.csv](traceability.csv) | results from local full suite | |
+| 10 | test summary report | [test-summary-report.md](test-summary-report.md) | local results; CI `<pending>` | |
 | 11 | validation summary report | [validation-summary-report.md](validation-summary-report.md) | draft | |
 | 12 | deviations / CAPA | [deviation-capa.md](deviation-capa.md) | DEV-GSK-61-1, DEV-GSK-61-2 open | |
 | 13 | QA review checklist | [qa-review-checklist.md](qa-review-checklist.md) | draft | |
@@ -31,7 +31,7 @@ Draft. Not a signed GxP record.
 | 17 | CI runs (`build`, `tests`, `scan`) | `<pending>` | `<pending>` | n/a |
 | 18 | code review and approval | `<pending>` | `<pending>` | n/a |
 | 19 | audit trail | events so far: session created (gsk-ticket-to-pr / playbook, GSK-61) 2026-10-07; Jira pickup comment 2026-10-07; PR opened `<pending>`; CI runs `<pending>`. QA adds approval and merge after merge (sources: audit-log.md) | open | n/a |
-| 20 | reproduction and SQL evidence | [evidence/](evidence/) (SQL, outputs, bisect, red run); ATLAS screenshots and recordings on the PR | before-fix recorded; after-fix `<pending>` | n/a |
+| 20 | reproduction and SQL evidence | [evidence/](evidence/) (SQL, outputs, bisect, red run); ATLAS screenshots and recordings on the PR | before-fix and after-fix recorded | n/a |
 
 | field | value |
 |---|---|

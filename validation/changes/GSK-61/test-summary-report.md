@@ -6,7 +6,7 @@ Draft. Not a signed GxP record.
 |---|---|
 | change id | CR-GSK-61 |
 | risk / approach | high, full CSV |
-| build under test | `<pending>` |
+| build under test | `2419b469` |
 | CI run | `<pending>` |
 | protocols / records | oq-protocol.md |
 
@@ -17,17 +17,17 @@ From `python3 dev/ci/summary.py`.
 | scope | run | passed | failures | errors | skipped |
 |---|---|---|---|---|---|
 | new tests, before the fix (`2df02d24`) | 5 | 1 | 4 | 0 | 0 |
-| new tests, after the fix | `<pending>` | `<pending>` | `<pending>` | `<pending>` | `<pending>` |
-| full suite | `<pending>` | `<pending>` | `<pending>` | `<pending>` | `<pending>` |
+| new tests, after the fix (`2419b469`) | 5 | 5 | 0 | 0 | 0 |
+| full suite (`2419b469`, local JDK 8) | 253 | 249 | 0 | 0 | 4 |
 
-Line coverage (JaCoCo): `<pending>`
+Line coverage (JaCoCo): 9762 / 131999, 7.4% (local run)
 
 ## Requirement coverage
 
 | URS id | tests | result |
 |---|---|---|
-| URS-CG-007 | `GenerateCohortTaskletTest#copiesEveryCachedRowIntoCohortTable`; `#copiesSubjectsWhateverTheirIdValue`; `#copiesSingleSubjectWithIdDivisibleBySliceCount`; ATLAS OQ step 8; SQL OQ step 9 | `<pending>` |
-| URS-CG-008 | `GenerateCohortTaskletTest#copiesEachRowOnceAndRegenerationReplacesRows`; `#leavesOtherCohortsAndCopiesStatistics`; ATLAS OQ step 10 | `<pending>` |
+| URS-CG-007 | `GenerateCohortTaskletTest#copiesEveryCachedRowIntoCohortTable`; `#copiesSubjectsWhateverTheirIdValue`; `#copiesSingleSubjectWithIdDivisibleBySliceCount`; ATLAS OQ step 8; SQL OQ step 9 | pass |
+| URS-CG-008 | `GenerateCohortTaskletTest#copiesEachRowOnceAndRegenerationReplacesRows`; `#leavesOtherCohortsAndCopiesStatistics`; ATLAS OQ step 10 | pass |
 
 ## Deviations
 
@@ -42,7 +42,7 @@ Line coverage (JaCoCo): `<pending>`
 
 ## Conclusion
 
-`<pending>`
+Draft: on the fix commit the new tests pass (5 / 5, red 4 / 5 before), the full suite has no failures or errors, ATLAS shows 830 / 830 for cohort #1 on EUNOMIA and the independent SQL gap is 0. CI result `<pending>`. Cohorts generated on 2.15.1-si.3 still need re-generation (DEV-GSK-61-1).
 
 | field | value |
 |---|---|

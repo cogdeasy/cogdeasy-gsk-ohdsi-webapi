@@ -1,0 +1,9 @@
+## Tests
+
+| run | passed | failures | errors | skipped |
+|---|---|---|---|---|
+| 253 | 249 | 0 | 0 | 4 |
+
+## Line coverage (JaCoCo)
+
+9762 / 131999 lines, 7.4%
