@@ -1,6 +1,6 @@
 # Traceability: cohort definition and generation (GSK-61)
 
-Draft, prepared by Devin. Not approved. To be reconciled with the approved URS in GSK's quality system. Results from the full-suite run on fix commit `2419b469` (local JDK 8, `python3 dev/ci/summary.py`: 253 run, 249 passed, 0 failures, 0 errors, 4 skipped); CI run on the PR adds the remote result.
+Draft, prepared by Devin. Not approved. To be reconciled with the approved URS in GSK's quality system. Results from the full-suite run on fix commit `2419b469` (local JDK 8, `python3 dev/ci/summary.py`: 253 run, 249 passed, 0 failures, 0 errors, 4 skipped); CI on PR #8 (build, tests, scan, Trivy) passed.
 
 | URS id | requirement | risk | code | test | result |
 |---|------------|---|--------------|--------------|---|

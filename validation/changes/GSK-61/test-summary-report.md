@@ -7,7 +7,7 @@ Draft. Not a signed GxP record.
 | change id | CR-GSK-61 |
 | risk / approach | high, full CSV |
 | build under test | `2419b469` |
-| CI run | `<pending>` |
+| CI run | PR #8 checks https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/pull/8/checks (build job 112615548453, tests job 112615548577, scan job 112615860671, Trivy job 112615975596) |
 | protocols / records | oq-protocol.md |
 
 ## Results
@@ -38,11 +38,11 @@ Line coverage (JaCoCo): 9762 / 131999, 7.4% (local run)
 
 ## Security scan
 
-`scan` check: `<pending>`, new findings: `<pending>`
+`scan` check: passed; Trivy: passed; new findings: none reported (checks green)
 
 ## Conclusion
 
-Draft: on the fix commit the new tests pass (5 / 5, red 4 / 5 before), the full suite has no failures or errors, ATLAS shows 830 / 830 for cohort #1 on EUNOMIA and the independent SQL gap is 0. CI result `<pending>`. Cohorts generated on 2.15.1-si.3 still need re-generation (DEV-GSK-61-1).
+Draft: on the fix commit the new tests pass (5 / 5, red 4 / 5 before), the full suite has no failures or errors, ATLAS shows 830 / 830 for cohort #1 on EUNOMIA and the independent SQL gap is 0. CI `build`, `tests`, `scan` and Trivy passed on PR #8. Cohorts generated on 2.15.1-si.3 still need re-generation (DEV-GSK-61-1).
 
 | field | value |
 |---|---|

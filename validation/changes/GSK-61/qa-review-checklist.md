@@ -5,7 +5,7 @@ Draft. Not a signed GxP record.
 | field | value |
 |---|---|
 | change id | CR-GSK-61 |
-| pull request | `<pending>` |
+| pull request | https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/pull/8 |
 | risk | high |
 
 | # | check | yes / no / n/a | comment |
