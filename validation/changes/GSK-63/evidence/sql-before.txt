@@ -1,0 +1,22 @@
+-- 2026-10-07T04:05:23Z WebAPI build: devin/gsk-63-cohort-count-dropped 2df02d2
+               source               | records | people 
+------------------------------------+---------+--------
+ independent SQL on CDM             |     830 |    830
+ webapi results.cohort              |     625 |    625
+ webapi cohort_cache (design)       |     830 |    830
+ gap (independent - results.cohort) |     205 |    205
+(4 rows)
+
+ cohort_definition_id | source_id | status | is_valid | person_count | record_count |       start_time        
+----------------------+-----------+--------+----------+--------------+--------------+-------------------------
+                    1 |         1 |      2 | t        |          625 |          625 | 2026-10-07 04:03:59.305
+(1 row)
+
+ remainder | cache_rows | in_results_cohort 
+-----------+------------+-------------------
+         0 |        205 |                 0
+         1 |        219 |               219
+         2 |        210 |               210
+         3 |        196 |               196
+(4 rows)
+

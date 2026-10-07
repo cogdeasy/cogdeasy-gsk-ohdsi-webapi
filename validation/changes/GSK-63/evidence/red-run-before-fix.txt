@@ -1,0 +1,16 @@
+GSK-63 red run: mvn -B -Pwebapi-postgresql -Dtest=GenerateCohortTaskletTest -DskipITtests test on 2df02d24 (release/2.15.1-si.3) + new test, JDK 8, 2026-10-07T04:01:55Z
+  [ERROR] Tests run: 5, Failures: 4, Errors: 0, Skipped: 0, Time elapsed: 23.917 s <<< FAILURE! - in org.ohdsi.webapi.cohortdefinition.GenerateCohortTaskletTest
+  [ERROR] copiesSubjectsWhateverTheirIdValue(org.ohdsi.webapi.cohortdefinition.GenerateCohortTaskletTest)  Time elapsed: 0.739 s  <<< FAILURE!
+  java.lang.AssertionError: expected:<[-7, -4, 1, 2, 3, 4, 5, 8, 12, 16, 2147483648, 9007199254740992]> but was:<[1, 2, 3, 5]>
+  [ERROR] copiesSingleSubjectWithIdDivisibleBySliceCount(org.ohdsi.webapi.cohortdefinition.GenerateCohortTaskletTest)  Time elapsed: 0.126 s  <<< FAILURE!
+  java.lang.AssertionError: expected:<1> but was:<0>
+  [ERROR] copiesEveryCachedRowIntoCohortTable(org.ohdsi.webapi.cohortdefinition.GenerateCohortTaskletTest)  Time elapsed: 2.052 s  <<< FAILURE!
+  java.lang.AssertionError: records expected:<830> but was:<623>
+  [ERROR] copiesEachRowOnceAndRegenerationReplacesRows(org.ohdsi.webapi.cohortdefinition.GenerateCohortTaskletTest)  Time elapsed: 0.458 s  <<< FAILURE!
+  java.lang.AssertionError: expected:<100> but was:<75>
+  [ERROR]   GenerateCohortTaskletTest.copiesEachRowOnceAndRegenerationReplacesRows:157 expected:<100> but was:<75>
+  [ERROR]   GenerateCohortTaskletTest.copiesEveryCachedRowIntoCohortTable:120 records expected:<830> but was:<623>
+  [ERROR]   GenerateCohortTaskletTest.copiesSingleSubjectWithIdDivisibleBySliceCount:145 expected:<1> but was:<0>
+  [ERROR]   GenerateCohortTaskletTest.copiesSubjectsWhateverTheirIdValue:132 expected:<[-7, -4, 1, 2, 3, 4, 5, 8, 12, 16, 2147483648, 9007199254740992]> but was:<[1, 2, 3, 5]>
+  [ERROR] Tests run: 5, Failures: 4, Errors: 0, Skipped: 0
+  [INFO] BUILD FAILURE

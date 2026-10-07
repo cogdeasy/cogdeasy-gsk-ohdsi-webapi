@@ -1,0 +1,10 @@
+## Tests
+
+| run | passed | failures | errors | skipped |
+|---|---|---|---|---|
+| 253 | 249 | 0 | 0 | 4 |
+
+## Line coverage (JaCoCo)
+
+9762 / 131999 lines, 7.4%
+4d4b1b7a fix(GSK-63): copy every cached cohort row in the sliced cohort copy

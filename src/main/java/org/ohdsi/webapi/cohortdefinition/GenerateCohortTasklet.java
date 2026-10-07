@@ -206,7 +206,7 @@ public class GenerateCohortTasklet extends CancelableTasklet implements Stoppabl
       sql = SqlTranslate.translateSql(sql, source.getSourceDialect());
       List<String> statements = new ArrayList<>(Arrays.asList(SqlSplit.splitSql(sql)));
 
-      for (int slice = 1; slice <= COPY_SLICES; slice++) {
+      for (int slice = 0; slice < COPY_SLICES; slice++) {
           String sliceSql = SqlRender.renderSql(copyGenerationSliceIntoCohortTableSql,
                   new String[] { RESULTS_DATABASE_SCHEMA, COHORT_DEFINITION_ID, DESIGN_HASH, "slice_count", "slice" },
                   new String[] { targetSchema, cohortDefinition.getId().toString(), res.getIdentifier().toString(),
