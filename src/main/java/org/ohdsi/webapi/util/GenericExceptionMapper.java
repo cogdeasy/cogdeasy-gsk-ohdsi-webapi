@@ -37,7 +37,17 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.sql.SQLException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
+import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.ohdsi.webapi.vocabulary.ConceptRecommendedNotInstalledException;
 
 /**
@@ -48,7 +58,14 @@ import org.ohdsi.webapi.vocabulary.ConceptRecommendedNotInstalledException;
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
     private static final Logger LOGGER = LoggerFactory.getLogger(GenericExceptionMapper.class);
-    private final String DETAIL = "Detail: ";
+    static final String DUPLICATE_RECORD_MESSAGE = "A record with this name already exists.";
+    static final String CONFLICT_MESSAGE = "The request conflicts with existing data.";
+    private static final String DETAIL = "Detail: ";
+    private static final Pattern DUPLICATE_KEY_DETAIL = Pattern.compile("^Key \\(([^,()]+)\\)=\\((.*)\\) already exists\\.?$");
+    // Only plain-text names are echoed back; anything with markup or control characters gets the fixed message
+    private static final Pattern SAFE_ECHOED_VALUE = Pattern.compile("^[\\p{L}\\p{N} _.,:;&()'/+#%-]+$");
+    private static final Pattern NAME_COLUMN = Pattern.compile("(?i)^\"?[a-z_]*name\"?$");
+    private static final int MAX_ECHOED_VALUE_LENGTH = 255;
 
     @Override
     public Response toResponse(Throwable ex) {
@@ -58,15 +75,17 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
         Status responseStatus;
         if (ex instanceof DataIntegrityViolationException) {
             responseStatus = Status.CONFLICT;
-            String cause = ex.getCause().getCause().getMessage();
-            cause = cause.substring(cause.indexOf(DETAIL) + DETAIL.length());
-            ex = new RuntimeException(cause);
+            // Never return raw driver / constraint text: only a parsed duplicate value or a fixed message
+            ex = new RuntimeException(getConflictMessage(ex));
         } else if (ex instanceof UnauthorizedException || ex instanceof ForbiddenException) {
             responseStatus = Status.FORBIDDEN;
         } else if (ex instanceof NotFoundException) {
             responseStatus = Status.NOT_FOUND;
         } else if (ex instanceof BadRequestException) {
             responseStatus = Status.BAD_REQUEST;
+        } else if (ex instanceof BadRequestAtlasException) {
+            responseStatus = Status.BAD_REQUEST;
+            ex = new RuntimeException(ex.getMessage());
         } else if (ex instanceof UndeclaredThrowableException) {
             Throwable throwable = getThrowable((UndeclaredThrowableException)ex);
             if (Objects.nonNull(throwable)) {
@@ -107,6 +126,61 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
                 .entity(errorMessage)
                 .type(MediaType.APPLICATION_JSON)
                 .build();
+    }
+
+    private static String getConflictMessage(Throwable ex) {
+        List<String> details = findDetails(ex);
+        for (String detail : details) {
+            Matcher matcher = DUPLICATE_KEY_DETAIL.matcher(detail);
+            if (matcher.matches()) {
+                String column = matcher.group(1).trim();
+                String value = matcher.group(2);
+                if (NAME_COLUMN.matcher(column).matches() && value.length() <= MAX_ECHOED_VALUE_LENGTH
+                        && SAFE_ECHOED_VALUE.matcher(value).matches()) {
+                    return "A record with the name \"" + value + "\" already exists.";
+                }
+                return DUPLICATE_RECORD_MESSAGE;
+            }
+        }
+        // A Detail that is not a duplicate key (e.g. a foreign key) must not be reported as a duplicate name
+        return details.isEmpty() ? DUPLICATE_RECORD_MESSAGE : CONFLICT_MESSAGE;
+    }
+
+    private static List<String> findDetails(Throwable ex) {
+        List<String> details = new ArrayList<>();
+        Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        Deque<Throwable> pending = new ArrayDeque<>();
+        pending.add(ex);
+        while (!pending.isEmpty()) {
+            Throwable current = pending.poll();
+            if (!visited.add(current)) {
+                continue;
+            }
+            String detail = extractDetail(current.getMessage());
+            if (detail != null) {
+                details.add(detail);
+            }
+            if (current.getCause() != null) {
+                pending.add(current.getCause());
+            }
+            if (current instanceof SQLException && ((SQLException) current).getNextException() != null) {
+                pending.add(((SQLException) current).getNextException());
+            }
+        }
+        return details;
+    }
+
+    private static String extractDetail(String message) {
+        if (message == null) {
+            return null;
+        }
+        int start = message.indexOf(DETAIL);
+        if (start < 0) {
+            return null;
+        }
+        String detail = message.substring(start + DETAIL.length());
+        int end = detail.indexOf('\n');
+        return (end < 0 ? detail : detail.substring(0, end)).trim();
     }
 
     private Throwable getThrowable(UndeclaredThrowableException ex) {
