@@ -19,7 +19,7 @@ Draft. Not a signed GxP record.
 | OQ | oq-protocol.md | steps 1-10 pass; CI green, scan findings `<pending>` | |
 | PQ / UAT | pq-uat-script.md | not executed (R&D scientist) | |
 | traceability | traceability.csv | complete for local run | |
-| test summary | test-summary-report.md | local results; CI green, scan findings `<pending>` | |
+| test summary | test-summary-report.md | local results; CI 253 / 249 / 0 / 0 / 4 | |
 
 ## Deviations and CAPA
 
