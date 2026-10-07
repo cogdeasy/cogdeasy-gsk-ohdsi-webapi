@@ -1,0 +1,10 @@
+ cohort_definition_id |             name             | source_key |       start_time        | status | is_valid | webapi_people | cache_people | gap 
+----------------------+------------------------------+------------+-------------------------+--------+----------+---------------+--------------+-----
+                    1 | Demo new users of diclofenac | EUNOMIA    | 2026-10-07 14:09:04.187 |      2 | t        |           625 |          830 | 205
+(1 row)
+
+ job_execution_id |       start_time        |        end_time         |  status   | exit_code 
+------------------+-------------------------+-------------------------+-----------+-----------
+                2 | 2026-10-07 14:09:04.172 | 2026-10-07 14:09:05.534 | COMPLETED | COMPLETED
+(1 row)
+
