@@ -1,0 +1,21 @@
+run at 2026-10-07T03:09:08Z
+ cohort_definition_id |             name             | source_key | status | is_valid |       start_time        | execution_duration | person_count | record_count | created_by_id 
+----------------------+------------------------------+------------+--------+----------+-------------------------+--------------------+--------------+--------------+---------------
+                    1 | Demo new users of diclofenac | EUNOMIA    |      2 | t        | 2026-10-07 03:07:51.759 |               1416 |          625 |          625 |              
+(1 row)
+
+ cohort_definition_id | cohort_rows 
+----------------------+-------------
+                    1 |         625
+(1 row)
+
+ design_hash | source_id | created_date | cached_rows 
+-------------+-----------+--------------+-------------
+   -61503765 |         1 | 2026-10-07   |         830
+(1 row)
+
+ job_execution_id |       create_time       |       start_time        |        end_time         |  status   | exit_code | cohort_definition_id | source_id | job_author 
+------------------+-------------------------+-------------------------+-------------------------+-----------+-----------+----------------------+-----------+------------
+                2 | 2026-10-07 03:07:51.736 | 2026-10-07 03:07:51.741 | 2026-10-07 03:07:53.157 | COMPLETED | COMPLETED | 1                    | 1         | anonymous
+(1 row)
+

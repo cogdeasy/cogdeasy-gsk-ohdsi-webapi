@@ -1,0 +1,43 @@
+GSK-61 bisect: git bisect start v2.15.1-si.3 v2.15.1; git bisect run validation/changes/GSK-61/evidence/bisect-check.sh
+run 2026-10-07 in a detached worktree; 7 commits in range, 3 steps tested, wall time 96 s
+
+running  '/home/ubuntu/gsk61/bisect-check.sh'
+7e26a94d: [INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0
+Bisecting: 1 revision left to test after this (roughly 1 step)
+[7148071746b9aaeb072387a71708edc70f81e5c1] chore(cohortdefinition): debug-log the number of cohort copy statements
+running  '/home/ubuntu/gsk61/bisect-check.sh'
+71480717: [ERROR] Tests run: 5, Failures: 4, Errors: 0, Skipped: 0
+Bisecting: 0 revisions left to test after this (roughly 0 steps)
+[25937aeec45ae2a4453887fe29a23cdf308dda7f] perf(cohortdefinition): copy cached cohort rows into the cohort table in slices
+running  '/home/ubuntu/gsk61/bisect-check.sh'
+25937aee: [ERROR] Tests run: 5, Failures: 4, Errors: 0, Skipped: 0
+25937aeec45ae2a4453887fe29a23cdf308dda7f is the first bad commit
+commit 25937aeec45ae2a4453887fe29a23cdf308dda7f
+Author: SI Delivery Team <delivery@si-partner.example>
+Date:   Sat Oct 3 16:22:00 2026 +0100
+
+    perf(cohortdefinition): copy cached cohort rows into the cohort table in slices
+    
+    Large cohorts were copied from cohort_cache into the cohort table with a single
+    INSERT ... SELECT, holding one long-running statement on the results schema.
+    Split the cohort row copy into COPY_SLICES statements partitioned on subject_id.
+    Inclusion, summary and censor stats are small and still copied in one statement.
+
+ .../webapi/cohortdefinition/GenerateCohortTasklet.java | 18 +++++++++++++++++-
+ .../sql/copyGenerationIntoCohortTableSql.sql           |  5 -----
+ .../sql/copyGenerationSliceIntoCohortTableSql.sql      |  5 +++++
+ 3 files changed, 22 insertions(+), 6 deletions(-)
+ create mode 100644 src/main/resources/resources/cohortdefinition/sql/copyGenerationSliceIntoCohortTableSql.sql
+bisect found first bad commitelapsed 96s
+
+--- git bisect log
+# bad: [11a4212f33abd57c213aa41a7f0a5c2d0097689e] docs: SI release notes for 2.15.1-si.3
+# good: [37e8066595c0d1f00e93b7fba0c31dc73f18f7c4] docs: GxP validation fan-out templates, GSK-1 worked example, evidence-pack and test-engineer skills (#3)
+git bisect start 'v2.15.1-si.3' 'v2.15.1'
+# good: [7e26a94defd37758cbde8c57d7613a32f96999b5] chore(cohortdefinition): strip trailing whitespace in CohortGenerationUtils
+git bisect good 7e26a94defd37758cbde8c57d7613a32f96999b5
+# bad: [7148071746b9aaeb072387a71708edc70f81e5c1] chore(cohortdefinition): debug-log the number of cohort copy statements
+git bisect bad 7148071746b9aaeb072387a71708edc70f81e5c1
+# bad: [25937aeec45ae2a4453887fe29a23cdf308dda7f] perf(cohortdefinition): copy cached cohort rows into the cohort table in slices
+git bisect bad 25937aeec45ae2a4453887fe29a23cdf308dda7f
+# first bad commit: [25937aeec45ae2a4453887fe29a23cdf308dda7f] perf(cohortdefinition): copy cached cohort rows into the cohort table in slices
