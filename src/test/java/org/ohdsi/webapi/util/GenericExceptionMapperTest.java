@@ -72,6 +72,22 @@ public class GenericExceptionMapperTest {
     }
 
     @Test
+    public void duplicateNameWithMarkupOrControlCharactersIsNotEchoed() {
+        for (String name : new String[]{"<script>alert(1)</script>", "Diabetes\u0007bell", "Diabetes\ttab"}) {
+            assertSafeConflict(new DataIntegrityViolationException("could not execute statement",
+                    new SQLException(RAW_DB_TEXT + "\n  Detail: Key (concept_set_name)=(" + name + ") already exists.")),
+                    GenericExceptionMapper.DUPLICATE_RECORD_MESSAGE);
+        }
+    }
+
+    @Test
+    public void duplicatePlainNameWithPunctuationIsEchoed() {
+        assertSafeConflict(new DataIntegrityViolationException("could not execute statement",
+                new SQLException(RAW_DB_TEXT + "\n  Detail: Key (concept_set_name)=(Pain & Fever (adult)) already exists.")),
+                "A record with the name \"Pain & Fever (adult)\" already exists.");
+    }
+
+    @Test
     public void duplicateValueOfNonNameColumnIsNotEchoed() {
         assertSafeConflict(new DataIntegrityViolationException("could not execute statement",
                 new SQLException("ERROR: duplicate key value violates unique constraint \"source_key_uq\""

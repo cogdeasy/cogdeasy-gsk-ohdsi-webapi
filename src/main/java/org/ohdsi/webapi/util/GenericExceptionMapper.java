@@ -62,6 +62,8 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
     static final String CONFLICT_MESSAGE = "The request conflicts with existing data.";
     private static final String DETAIL = "Detail: ";
     private static final Pattern DUPLICATE_KEY_DETAIL = Pattern.compile("^Key \\(([^,()]+)\\)=\\((.*)\\) already exists\\.?$");
+    // Only plain-text names are echoed back; anything with markup or control characters gets the fixed message
+    private static final Pattern SAFE_ECHOED_VALUE = Pattern.compile("^[\\p{L}\\p{N} _.,:;&()'/+#%-]+$");
     private static final Pattern NAME_COLUMN = Pattern.compile("(?i)^\"?[a-z_]*name\"?$");
     private static final int MAX_ECHOED_VALUE_LENGTH = 255;
 
@@ -133,7 +135,8 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
             if (matcher.matches()) {
                 String column = matcher.group(1).trim();
                 String value = matcher.group(2);
-                if (NAME_COLUMN.matcher(column).matches() && value.length() <= MAX_ECHOED_VALUE_LENGTH) {
+                if (NAME_COLUMN.matcher(column).matches() && value.length() <= MAX_ECHOED_VALUE_LENGTH
+                        && SAFE_ECHOED_VALUE.matcher(value).matches()) {
                     return "A record with the name \"" + value + "\" already exists.";
                 }
                 return DUPLICATE_RECORD_MESSAGE;
