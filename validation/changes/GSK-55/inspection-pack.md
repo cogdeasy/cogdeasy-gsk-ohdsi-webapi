@@ -2,7 +2,7 @@
 
 | field | value |
 |---|---|
-| ticket / PR | https://cog-gtm.atlassian.net/browse/GSK-55 / `<pending>` |
+| ticket / PR | https://cog-gtm.atlassian.net/browse/GSK-55 / https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/pull/12 |
 | risk / approach | medium CSA |
 | merge commit | `<pending>` |
 
@@ -24,7 +24,7 @@
 | 14 | CI runs | `<pending>` | pending |
 | 15 | e2e test recording and screenshots | n/a: no UI change; REST checks captured as text in evidence/ | n/a |
 | 16 | code review and approval | PR review link | QA adds after merge |
-| 17 | audit trail | events so far: session created, branch pushed, PR opened `<pending>` | QA adds approval and merge |
+| 17 | audit trail | events so far: session created, branch pushed, PR #12 opened | QA adds approval and merge |
 
 | checked by (QA) | __________________ |
 |---|---|

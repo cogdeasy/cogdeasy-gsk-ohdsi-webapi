@@ -57,8 +57,8 @@ because they only show up when Spring contexts start, after compilation succeeds
 | type | action | owner | due | status |
 |---|---|---|---|---|
 | correction | (a) `spring.main.allow-bean-definition-overriding=true`; (b) `nullable(String.class)` in one verify (Mockito 1 meaning of `anyString()`); (c) Flyway datasource asks for tomcat-jdbc; (d) remove `@DependsOn("batchDataSourceInitializer")`, schema init is off; (e) `--add-opens java.base/java.net=ALL-UNNAMED` for test JVMs and documented for the runtime JVM. (f) `spring.main.allow-circular-references=true`; (g) keep Hibernate 5.4.2 as on `main`; (h) `@Autowired(required = false)` on `AtlasRegularSecurity.jdbcDataSource`; (i) pin `spring-plugin-core` 2.0.0; (j) `jakarta.jms-api` instead of `geronimo-jms_1.1_spec`. (k) `MockitoJUnitRunner.Silent` on that one test; (l) import `jackson-bom` ${jackson.version} before the Boot BOM. Commits `fdb211f0`, `8cbf8114` | | | done; runs 9 and 10 green (237/0/0/3, 11/0/0/1) |
-| corrective | add these items to the demo-ops playbook `gsk-boot2-migration.md` | | | done (demo-ops PR `<pending>`) |
-| preventive | playbook step: run one Spring context test (`-Dtest=PermissionTest`) right after the first green compile, before the full suite | | | in playbook (demo-ops PR `<pending>`) |
+| corrective | add these items to the demo-ops playbook `gsk-boot2-migration.md` | | | done (cogdeasy/cogdeasy-gsk-demo-ops#10) |
+| preventive | playbook step: run one Spring context test (`-Dtest=PermissionTest`) right after the first green compile, before the full suite | | | in playbook (cogdeasy/cogdeasy-gsk-demo-ops#10) |
 
 ### Closure
 
@@ -112,7 +112,7 @@ Classification: __________________ (critical / major / minor, set by QA)
 |---|---|---|---|---|
 | correction | (a) `spring.jackson.serialization.write-dates-as-timestamps=true`, commit `8cbf8114` | | | done, re-run shows epoch ms |
 | correction | (b) none in this PR: changing the error body belongs to GSK-1 (Q1), which replaces it with a safe body | | | proposed, for QA decision |
-| preventive | playbook: compare one JSON response from `main` and the branch on the same stack | | | in playbook (demo-ops PR `<pending>`) |
+| preventive | playbook: compare one JSON response from `main` and the branch on the same stack | | | in playbook (cogdeasy/cogdeasy-gsk-demo-ops#10) |
 
 ### Closure
 

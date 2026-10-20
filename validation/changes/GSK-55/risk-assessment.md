@@ -4,7 +4,7 @@ Draft. Not a signed GxP record.
 
 | field | value |
 |---|---|
-| ticket / PR | GSK-55 (https://cog-gtm.atlassian.net/browse/GSK-55) / `<pending>` |
+| ticket / PR | GSK-55 (https://cog-gtm.atlassian.net/browse/GSK-55) / https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/pull/12 |
 | tier | silver |
 | component | whole application runtime: Spring Boot 1.5.22 -> 2.7.18 (Spring 4.3 -> 5.3, Spring Data 1.11 -> 2.7, Spring Batch 3 -> 4.3, Jersey 2.25 -> 2.35, Tomcat 8.5 -> 9, Hibernate 5.4 -> 5.6), Java 8 -> 17 |
 | GAMP 5 category | 5 - custom code in a forked open-source application; the platform change touches every module |

@@ -5,7 +5,7 @@ Draft. Not a signed GxP record. Devin filled the comment column only.
 | field | value |
 |---|---|
 | change id | CR-GSK-55 |
-| pull request | `<pending>` |
+| pull request | https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/pull/12 |
 | risk | medium |
 
 | # | check | yes / no / n/a | comment |
