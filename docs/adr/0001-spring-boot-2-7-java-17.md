@@ -71,8 +71,20 @@ so `./reproduce.sh` still exits 1 after this change.
   support runs to 2029). The Trivy `scan` job reports the CVE delta on the PR.
 - Java 17 is required to build and run. The live demo environment on `main` stays on Java 8
   until this PR is merged.
+- Kept Boot 1.5 behaviour where Boot 2 changed a default seen by clients or scanners:
+  `spring.jackson.serialization.write-dates-as-timestamps=true` (dates stay epoch ms for ATLAS),
+  and `commons-collections` 3.2.2 (Boot 1.5 managed it; without it 3.2.1 comes back, CVE-2015-7501).
+- One difference stays: the 409 error body has an extra `"originalMessage":null` (Spring 5
+  `ErrorMessage`). The error body is replaced by GSK-1 (Q1), so it is not changed here.
+- Miredot 2.4 needs JDK 8 `tools.jar`; profile `miredot-off-on-jdk9plus` skips it on Java 9+, so
+  REST docs are not generated until Miredot is replaced.
+- Trivy over the WAR (`validation/changes/GSK-55/evidence/trivy-summary.md`): 187 CVEs on `main`,
+  165 on this branch; 38 closed (4 critical, 20 high), 16 new (8 high, 0 critical) in Tomcat 9.0.83,
+  Spring 5.3.31, Micrometer 1.9.17 and Boot 2.7.18. Boot 2.7 OSS support has ended, so Boot 3 is
+  the real fix; Tomcat 9.0.x can move first in its own PR.
 - Next steps, one PR each: Hibernate 5.4 -> 5.6; Flyway 4 -> 8; Shiro 1.13 -> 2.x; Redshift JDBC 2.x
-  (drops `--add-opens`); remove `allow-circular-references`; then Boot 3 / `jakarta`.
+  (drops `--add-opens`); Tomcat 9.0.x patch; replace Miredot; remove `allow-circular-references`;
+  then Boot 3 / `jakarta`.
 
 ## Alternatives considered
 
