@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Component
@@ -22,7 +23,7 @@ public class BuildInfo {
 
         this.artifactVersion = String.format("%s %s", buildProperties.getArtifact(), buildProperties.getVersion());
         this.build = buildNumber;
-        this.timestamp = buildProperties.getTime().toString();
+        this.timestamp = Date.from(buildProperties.getTime()).toString();
         this.branch = buildProperties.get("git.branch");
         this.commitId = buildProperties.get("git.commit.id");
         this.atlasRepositoryInfo = new RepositoryInfo(

@@ -196,7 +196,7 @@ public class CohortSamplingService extends AbstractDaoService {
 	 */
 	public void refreshSample(Integer sampleId) {
 		
-				CohortSample sample = sampleRepository.findById(sampleId).orElse(null);
+				CohortSample sample = sampleRepository.findById(sampleId.intValue());
 		if (sample == null) {
 			throw new NotFoundException("Cohort sample with ID " + sampleId + " not found");
 		}
