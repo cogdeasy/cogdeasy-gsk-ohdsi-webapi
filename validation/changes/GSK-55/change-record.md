@@ -9,7 +9,7 @@ Draft change record. Not a signed GxP record.
 | tier | silver |
 | ticket | https://cog-gtm.atlassian.net/browse/GSK-55 |
 | pull request | https://github.com/cogdeasy/cogdeasy-gsk-ohdsi-webapi/pull/12 |
-| commits | `fdb211f0` (Boot 2.7 / Java 17), `2d55ddd0` (ADR), `8cbf8114` (date JSON, commons-collections), evidence commit `<pending>` |
+| commits | `fdb211f0` (Boot 2.7 / Java 17), `2d55ddd0` (ADR), `8cbf8114` (date JSON, commons-collections), `16e653b4` (review fixes, DEV-GSK-55-4), evidence commits |
 | author | Devin (https://devin-gtm.devinenterprise.com/sessions/c35b1b7ee6334fbca00709807dc3d950) |
 | description | Spring Boot 1.5.22 -> 2.7.18 and Java 8 -> 17, per demo-ops `playbooks/gsk-boot2-migration.md` and `docs/adr/0001-spring-boot-2-7-java-17.md`. Spring Data 2 / Jersey 2.35 / Mockito 4 API changes; Boot 1.5 defaults kept by property where Boot 2 changed them; Flyway 4.2, Shiro 1.13, Hibernate 5.4.2, Jackson 2.12.7 and `javax.*` unchanged. CI and Dockerfile on Java 17. |
 | root cause | not a defect fix |

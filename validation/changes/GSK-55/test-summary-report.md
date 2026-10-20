@@ -6,7 +6,7 @@ Draft. Not a signed GxP record.
 |---|---|
 | change id | CR-GSK-55 |
 | risk / approach | medium CSA |
-| build under test | `8cbf8114` |
+| build under test | `8cbf8114` (OQ); fix `16e653b4` re-run: suite and `/WebAPI/info` |
 | CI run | `<pending>` |
 | protocols / records | oq-protocol.md, deviation-capa.md |
 
@@ -41,6 +41,7 @@ Line coverage (JaCoCo): 9,651 / 132,012, 7.3% (`main`: 9,724 / 131,990, 7.4%).
 | DEV-GSK-55-1 | development runs 1-8 failed on Boot 2 / Java 17 defaults | corrected; runs 9-10 green |
 | DEV-GSK-55-2 | 409 body has extra `originalMessage:null`; dates were ISO strings on first try | dates fixed; body for QA decision |
 | DEV-GSK-55-3 | `util` coverage 6 lines lower, start-up side effects only | for QA decision |
+| DEV-GSK-55-4 | review found `buildInfo.timestamp` format change and `refreshSample` lazy `createdBy` | fixed in 16e653b4; suite re-run 248/244/0/0/4 |
 
 ## Security scan
 

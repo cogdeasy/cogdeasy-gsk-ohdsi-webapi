@@ -167,3 +167,51 @@ Classification: __________________ (critical / major / minor, set by QA)
 |---|---|
 | closed by (QA) | __________________ |
 | date | __________________ |
+
+## Deviation DEV-GSK-55-4
+
+| field | value |
+|---|---|
+| deviation id | DEV-GSK-55-4 |
+| change id | CR-GSK-55 |
+| raised in | PR #12 automated review on aa917229, after OQ execution |
+| raised by | https://devin-gtm.devinenterprise.com/sessions/c35b1b7ee6334fbca00709807dc3d950 |
+| date raised | 2026-10-20 |
+
+### Description
+
+Review found two behaviour changes that OQ did not catch:
+
+| # | where | Boot 1.5 (`main`) | branch at aa917229 | cause |
+|---|---|---|---|---|
+| (a) | `GET /WebAPI/info` `buildInfo.timestamp` | `"Tue Oct 20 17:11:27 UTC 2026"` | `"2026-10-20T17:13:41.352Z"` | Boot 2 `BuildProperties.getTime()` returns `Instant`, not `Date`; `BuildInfo` calls `toString()` on it |
+| (b) | `CohortSamplingService.refreshSample` | custom `findById(int)` with `LEFT JOIN FETCH c.createdBy` | `CrudRepository.findById(Integer)`, `createdBy` lazy | with an `Integer` argument Java now picks the inherited Spring Data 2 method; `sampleToSampleDTO` then reads `createdBy` outside a transaction |
+
+(a) was visible in the step 5 evidence (`evidence/*/runtime-info-sources.txt`) but OQ step 5 checked
+status codes and `commitId` only. No automated test covers (b).
+
+### Impact
+
+| area | impact | reason |
+|---|---|---|
+| patient safety | no | nothing deployed |
+| product quality | yes | (a) format change on a public endpoint; (b) refresh of a sample with a creator would fail with a lazy-load error |
+| validation status | yes | OQ step 5 marked pass on incomplete comparison |
+
+Classification: __________________ (critical / major / minor, set by QA)
+
+### CAPA
+
+| type | action | owner | due | status |
+|---|---|---|---|---|
+| correction | (a) `Date.from(buildProperties.getTime()).toString()`; (b) `sampleRepository.findById(sampleId.intValue())`. Commit `16e653b4` | | | done |
+| corrective | other overloads checked: every other removed `findById` was a plain derived query with no fetch join; `findById(int)` callers in `CohortSamplingService` lines 70 and 455 already pass `int` | | | done |
+| preventive | playbook: diff whole JSON bodies between `main` and branch, not single fields | | | in playbook (cogdeasy/cogdeasy-gsk-demo-ops#10) |
+
+### Closure
+
+| field | value |
+|---|---|
+| effectiveness check | full suite on 16e653b4: 237/0/0/3 + 11/0/0/1; `/WebAPI/info` `timestamp` `"Tue Oct 20 17:24:23 UTC 2026"`, same keys as Boot 1.5 (`evidence/boot2.7-16e653b/`). (b) not exercised at runtime: no automated test covers it and the local stack has no sample with a creator |
+| closed by (QA) | __________________ |
+| date | __________________ |
