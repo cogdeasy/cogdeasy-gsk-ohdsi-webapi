@@ -77,7 +77,7 @@ public class IncidenceRatesShinyPackagingService extends CommonShinyPackagingSer
     @Override
     @Transactional
     public void populateAppData(Integer generationId, String sourceKey, ShinyAppDataConsumers dataConsumers) {
-        IncidenceRateAnalysis analysis = incidenceRateAnalysisRepository.findOne(generationId);
+        IncidenceRateAnalysis analysis = incidenceRateAnalysisRepository.findById(generationId).orElse(null);
         ExceptionUtils.throwNotFoundExceptionIfNull(analysis, String.format("There is no incidence rate analysis with id = %d.", generationId));
         try {
             dataConsumers.getAppProperties().accept(ShinyConstants.PROPERTY_NAME_ATLAS_LINK.getValue(), String.format("%s/#/iranalysis/%s", atlasUrl, generationId));
@@ -194,7 +194,7 @@ public class IncidenceRatesShinyPackagingService extends CommonShinyPackagingSer
     @Override
     @Transactional
     public ApplicationBrief getBrief(Integer generationId, String sourceKey) {
-        IncidenceRateAnalysis analysis = incidenceRateAnalysisRepository.findOne(generationId);
+        IncidenceRateAnalysis analysis = incidenceRateAnalysisRepository.findById(generationId).orElse(null);
         Integer assetId = analysis.getId();
         Integer sourceId = sourceRepository.findBySourceKey(sourceKey).getSourceId();
         ApplicationBrief applicationBrief = new ApplicationBrief();

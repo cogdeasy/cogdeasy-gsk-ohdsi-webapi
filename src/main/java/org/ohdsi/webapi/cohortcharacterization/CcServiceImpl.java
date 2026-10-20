@@ -363,7 +363,7 @@ public class CcServiceImpl extends AbstractDaoService implements CcService, Gene
 
     @Override
     public void deleteCc(Long ccId) {
-        repository.delete(ccId);
+        repository.deleteById(ccId);
     }
 
     @Override
@@ -414,7 +414,7 @@ public class CcServiceImpl extends AbstractDaoService implements CcService, Gene
                 existingLink -> entity.getStratas().stream().noneMatch(newLink -> Objects.equals(newLink.getId(), existingLink.getId())),
                 CohortCharacterizationEntity::getStratas);
         foundEntity.getStratas().removeAll(stratasToDelete);
-        strataRepository.delete(stratasToDelete);
+        strataRepository.deleteAll(stratasToDelete);
         Map<Long, CcStrataEntity> strataEntityMap = foundEntity.getStratas().stream()
                 .collect(Collectors.toMap(CcStrataEntity::getId, s -> s));
 
@@ -435,7 +435,7 @@ public class CcServiceImpl extends AbstractDaoService implements CcService, Gene
                 return updated;
             }
         }).collect(Collectors.toList());
-        entity.setStratas(new HashSet<>(strataRepository.save(updatedStratas)));
+        entity.setStratas(new HashSet<>(strataRepository.saveAll(updatedStratas)));
     }
 
     private void updateCohorts(final CohortCharacterizationEntity entity, final CohortCharacterizationEntity foundEntity) {
@@ -444,10 +444,10 @@ public class CcServiceImpl extends AbstractDaoService implements CcService, Gene
     }
 
     private void updateAnalyses(final CohortCharacterizationEntity entity, final CohortCharacterizationEntity foundEntity) {
-        ccFeAnalysisRepository.delete(foundEntity.getCcFeatureAnalyses());
+        ccFeAnalysisRepository.deleteAll(foundEntity.getCcFeatureAnalyses());
         foundEntity.getCcFeatureAnalyses().clear();
         foundEntity.getCcFeatureAnalyses().addAll(entity.getCcFeatureAnalyses());
-        ccFeAnalysisRepository.save(foundEntity.getCcFeatureAnalyses());
+        ccFeAnalysisRepository.saveAll(foundEntity.getCcFeatureAnalyses());
     }
 
     private <T extends WithId> List<T> getLinksToDelete(final CohortCharacterizationEntity foundEntity,
@@ -470,7 +470,7 @@ public class CcServiceImpl extends AbstractDaoService implements CcService, Gene
                 parameter -> !nameToParamFromInputMap.containsKey(parameter.getName()),
                 CohortCharacterizationEntity::getParameters);
         foundEntity.getParameters().removeAll(paramsForDelete);
-        paramRepository.delete(paramsForDelete);
+        paramRepository.deleteAll(paramsForDelete);
     }
 
     private void updateOrCreateParams(final CohortCharacterizationEntity entity, final CohortCharacterizationEntity foundEntity) {
@@ -486,7 +486,7 @@ public class CcServiceImpl extends AbstractDaoService implements CcService, Gene
                 paramsForCreateOrUpdate.add(entityFromMap);
             }
         }
-        paramRepository.save(paramsForCreateOrUpdate);
+        paramRepository.saveAll(paramsForCreateOrUpdate);
     }
 
     @Override
@@ -551,7 +551,7 @@ public class CcServiceImpl extends AbstractDaoService implements CcService, Gene
 
     @Override
     public CohortCharacterizationEntity findByIdWithLinkedEntities(final Long id) {
-        return repository.findOne(id, defaultEntityGraph);
+        return repository.findById(id, defaultEntityGraph).orElse(null);
     }
 
     @Override
@@ -1288,7 +1288,7 @@ public class CcServiceImpl extends AbstractDaoService implements CcService, Gene
 
     private void gatherForPrevalence(final CcPrevalenceStat stat, final ResultSet rs) throws SQLException {
         Long generationId = rs.getLong("cc_generation_id");
-        CcGenerationEntity ccGeneration = ccGenerationRepository.findOne(generationId);
+        CcGenerationEntity ccGeneration = ccGenerationRepository.findById(generationId).orElse(null);
 
         stat.setFaType(rs.getString("fa_type"));
         stat.setSourceKey(ccGeneration.getSource().getSourceKey());
@@ -1367,7 +1367,7 @@ public class CcServiceImpl extends AbstractDaoService implements CcService, Gene
             feAnalysisEntity.setCohortCharacterization(persistedEntity);
             return feAnalysisEntity;
         }).collect(Collectors.toSet());
-        ccFeAnalysisRepository.save(featureAnalyses);
+        ccFeAnalysisRepository.saveAll(featureAnalyses);
 
         persistedEntity.getCcFeatureAnalyses().addAll(featureAnalyses);
         return savedAnalysesIds;

@@ -21,7 +21,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 8
+          java-version: 17
           cache: maven
       - name: Package WAR
         run: mvn -B -DskipUnitTests -DskipITtests -P${{ env.MAVEN_PROFILE }} package
@@ -39,7 +39,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 8
+          java-version: 17
           cache: maven
       - name: Unit and integration tests with coverage
         run: mvn -B -P${{ env.MAVEN_PROFILE }} test

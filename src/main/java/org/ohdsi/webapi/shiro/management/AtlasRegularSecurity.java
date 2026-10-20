@@ -189,7 +189,8 @@ public class AtlasRegularSecurity extends AtlasSecurity {
     @Qualifier("activeDirectoryProvider")
     private LdapProvider adLdapProvider;
 
-    @Autowired
+    // AuthDataSource returns null when the auth DB is unreachable; Spring 5 only injects that if not required.
+    @Autowired(required = false)
     @Qualifier("authDataSource")
     private DataSource jdbcDataSource;
 

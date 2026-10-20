@@ -12,7 +12,7 @@
     <build.number>${BUILD_NUMBER}</build.number>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Spring Boot manages spring.version as well -->
-    <spring.boot.version>1.5.22.RELEASE</spring.boot.version>
+    <spring.boot.version>2.7.18</spring.boot.version>
     <log4j2.version>2.17.1</log4j2.version>
     <flyway.version>4.2.0</flyway.version>
     <waffle.version>2.2.1</waffle.version>
@@ -24,7 +24,7 @@
     <dom4j.version>2.1.3</dom4j.version>
     <hydra.version>0.4.0</hydra.version>
     <featureExtraction.version>3.8.0</featureExtraction.version>
-    <tomcat.embed.version>8.5.87</tomcat.embed.version>
+    <tomcat.embed.version>9.0.83</tomcat.embed.version>
 
     <commons-fileupload.version>1.5</commons-fileupload.version>
 
@@ -38,8 +38,11 @@
     <skipUnitTests>false</skipUnitTests>
     <skipITtests>false</skipITtests>
     <miredot.phase>package</miredot.phase>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.release>17</maven.compiler.release>
+    <!-- Redshift JDBC 1.2.x reflects into java.net (JEP 403); needed on Java 17 until that driver is upgraded. -->
+    <jvm.add-opens>--add-opens java.base/java.net=ALL-UNNAMED</jvm.add-opens>
 
     <!-- Primary DataSource -->
     <!-- default sql server - TODO How about making postgres the default (e.g. in line with open source tech)? -alexfranken -->
@@ -201,7 +204,7 @@
     <server.servlet.context-path>/WebAPI</server.servlet.context-path>
 
     <arachne.version>1.17.4</arachne.version>
-    <jersey-media-multipart.version>2.25.1</jersey-media-multipart.version>
+    <jersey-media-multipart.version>2.35</jersey-media-multipart.version>
     <execution.invalidation.period>600000</execution.invalidation.period>
     <execution.invalidation.maxage.hours>12</execution.invalidation.maxage.hours>
     <execution.status.period>10000</execution.status.period>
@@ -384,9 +387,9 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.gmaven</groupId>
-        <artifactId>gmaven-plugin</artifactId>
-        <version>1.5</version>
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+        <version>3.0.2</version>
         <executions>
           <execution>
             <id>add-git-branch-info</id>
@@ -395,13 +398,23 @@
               <goal>execute</goal>
             </goals>
             <configuration>
-              <source>
-                if (project.properties.getProperty("git.branch") == null) project.properties.setProperty("git.branch", "*");
-                if (project.properties.getProperty("git.commit.id.abbrev") == null) project.properties.setProperty("git.commit.id.abbrev", "*");
-              </source>
+              <scripts>
+                <script><![CDATA[
+                  if (project.properties.getProperty("git.branch") == null) project.properties.setProperty("git.branch", "*")
+                  if (project.properties.getProperty("git.commit.id.abbrev") == null) project.properties.setProperty("git.commit.id.abbrev", "*")
+                ]]></script>
+              </scripts>
             </configuration>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>4.0.23</version>
+            <scope>runtime</scope>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.springframework.boot</groupId>
@@ -437,6 +450,7 @@
         <configuration>
           <skipTests>${skipUnitTests}</skipTests>
           <trimStackTrace>false</trimStackTrace>
+          <argLine>@{argLine} ${jvm.add-opens}</argLine>
         </configuration>
       </plugin>
       <plugin>
@@ -467,6 +481,7 @@
         <configuration>
           <skipITs>${skipITtests}</skipITs>
           <trimStackTrace>false</trimStackTrace>
+          <argLine>@{argLine} ${jvm.add-opens}</argLine>
         </configuration>
         <executions>
           <execution>
@@ -573,6 +588,12 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- spring-hateoas 1.5 (Boot 2.7 BOM) needs spring-plugin 2.x; spring-batch-admin-manager pulls 1.1. -->
+      <dependency>
+        <groupId>org.springframework.plugin</groupId>
+        <artifactId>spring-plugin-core</artifactId>
+        <version>2.0.0.RELEASE</version>
+      </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-api</artifactId>
@@ -592,6 +613,14 @@
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
         <version>${log4j2.version}</version>
+      </dependency>
+      <!-- Keep every Jackson module on ${jackson.version}; the Boot 2.7 BOM would bring 2.13 modules. -->
+      <dependency>
+        <groupId>com.fasterxml.jackson</groupId>
+        <artifactId>jackson-bom</artifactId>
+        <version>${jackson.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <!-- Import dependency management from Spring Boot -->
@@ -689,8 +718,7 @@
       <artifactId>spring-boot-starter-batch</artifactId>
     </dependency>
 
-    <!-- We are intentionally overriding the Tomcat version from Spring Boot 1.5.22.RELEASE -->
-    <!-- and assuming tomcat-jdbc.jar will be in the Tomcat installation folder (\apache-tomcat-8.5.xxx\lib). -->
+    <!-- Tomcat 9 matches Spring Boot 2.7; tomcat-jdbc.jar is expected in the Tomcat lib folder. -->
     <!-- WebAPI.war.original should not contain overridden libraries -->
     <dependency>
       <groupId>org.apache.tomcat.embed</groupId>
@@ -761,9 +789,8 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.hibernate</groupId>
+      <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
-      <version>5.4.2.Final</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
@@ -779,7 +806,6 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>3.1.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -1061,7 +1087,6 @@
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-crypto</artifactId>
-      <version>4.2.3.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>com.zaxxer</groupId>
@@ -1100,6 +1125,10 @@
       <version>${arachne.version}</version>
       <exclusions>
         <exclusion>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jms_1.1_spec</artifactId>
+        </exclusion>
+        <exclusion>
           <artifactId>org.hibernate</artifactId>
           <groupId>hibernate-validator</groupId>
         </exclusion>
@@ -1113,6 +1142,11 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- Spring JMS 5 needs the JMS 2.0 API (javax.jms); ActiveMQ 5.16 only brings JMS 1.1. -->
+    <dependency>
+      <groupId>jakarta.jms</groupId>
+      <artifactId>jakarta.jms-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.odysseusinc.arachne</groupId>
       <artifactId>arachne-scheduler</artifactId>
@@ -1124,6 +1158,12 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- Was transitive via Spring Batch 3; Spring Batch 4 no longer brings it. -->
+    <dependency>
+      <groupId>org.codehaus.jettison</groupId>
+      <artifactId>jettison</artifactId>
+      <version>1.2</version>
+    </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
       <artifactId>jersey-media-multipart</artifactId>
@@ -1132,7 +1172,6 @@
     <dependency>
       <groupId>org.springframework.ldap</groupId>
       <artifactId>spring-ldap-core</artifactId>
-      <version>2.3.2.RELEASE</version>
     </dependency>
     <dependency>
       <groupId>com.odysseusinc</groupId>
@@ -1201,7 +1240,7 @@
     <dependency>
       <groupId>com.cosium.spring.data</groupId>
       <artifactId>spring-data-jpa-entity-graph</artifactId>
-      <version>1.11.03</version>
+      <version>2.7.10</version>
     </dependency>
     <dependency>
       <groupId>org.pac4j</groupId>
@@ -1266,6 +1305,11 @@
           <artifactId>android-json</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.vintage</groupId>
+      <artifactId>junit-vintage-engine</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.dbunit</groupId>
@@ -1361,6 +1405,16 @@
         <security.db.datasource.password>${datasource.password}</security.db.datasource.password>
         <security.db.datasource.authenticationQuery>select password from ${security.db.datasource.schema}.users_data where \
           lower(email) = lower(?)</security.db.datasource.authenticationQuery>
+      </properties>
+    </profile>
+    <profile>
+      <!-- Miredot 2.4 needs com.sun:tools (JDK 8 tools.jar), which Java 9+ does not have. REST docs are not built on Java 17; see docs/adr/0001. -->
+      <id>miredot-off-on-jdk9plus</id>
+      <activation>
+        <jdk>[9,)</jdk>
+      </activation>
+      <properties>
+        <miredot.phase>none</miredot.phase>
       </properties>
     </profile>
     <profile>

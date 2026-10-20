@@ -15,34 +15,27 @@
 package org.ohdsi.webapi;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import javax.inject.Inject;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.QueryParam;
-import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.jersey.server.internal.inject.AbstractContainerRequestValueFactory;
+import java.util.function.Function;
+import javax.ws.rs.core.MultivaluedMap;
+import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.model.Parameter;
-import org.glassfish.jersey.server.spi.internal.ValueFactoryProvider;
+import org.glassfish.jersey.server.spi.internal.ValueParamProvider;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-public class PageableValueFactoryProvider implements ValueFactoryProvider {
+public class PageableValueFactoryProvider implements ValueParamProvider {
 
-    private final ServiceLocator locator;
-
-    @Inject
-    public PageableValueFactoryProvider(ServiceLocator locator) {
-        this.locator = locator;
-    }
+    private static final int DEFAULT_PAGE = 0;
+    private static final int DEFAULT_SIZE = 10;
 
     @Override
-    public Factory<?> getValueFactory(Parameter parameter) {
+    public Function<ContainerRequest, ?> getValueProvider(Parameter parameter) {
         if (parameter.getRawType() == Pageable.class
                 && parameter.isAnnotationPresent(Pagination.class)) {
-            Factory<?> factory = new PageableValueFactory(locator);
-            return factory;
+            return PageableValueFactoryProvider::provide;
         }
         return null;
     }
@@ -52,38 +45,25 @@ public class PageableValueFactoryProvider implements ValueFactoryProvider {
         return Priority.NORMAL;
     }
 
-    private static class PageableValueFactory
-            extends AbstractContainerRequestValueFactory<Pageable> {
+    static Pageable provide(ContainerRequest request) {
+        MultivaluedMap<String, String> query = request.getUriInfo().getQueryParameters();
+        int page = intParam(query.getFirst("page"), DEFAULT_PAGE);
+        int size = intParam(query.getFirst("size"), DEFAULT_SIZE);
+        List<String> sort = query.containsKey("sort") ? query.get("sort") : Collections.emptyList();
 
-        @QueryParam("page") @DefaultValue("0") Integer page;
-        @QueryParam("size") @DefaultValue("10") Integer size;
-        @QueryParam("sort") List<String> sort;
-
-        private final ServiceLocator locator;
-
-        private PageableValueFactory(ServiceLocator locator) {
-            this.locator = locator;
+        List<Sort.Order> orders = new ArrayList<>();
+        for (String propOrder: sort) {
+            String[] propOrderSplit = propOrder.split(",");
+            String property = propOrderSplit[0];
+            Sort.Direction direction = propOrderSplit.length == 1
+                    ? null : Sort.Direction.fromOptionalString(propOrderSplit[1]).orElse(null);
+            orders.add(direction == null ? Sort.Order.by(property) : new Sort.Order(direction, property));
         }
 
-        @Override
-        public Pageable provide() {
-            locator.inject(this);
+        return PageRequest.of(page, size, orders.isEmpty() ? Sort.unsorted() : Sort.by(orders));
+    }
 
-            List<Sort.Order> orders = new ArrayList<>();
-            for (String propOrder: sort) {
-                String[] propOrderSplit = propOrder.split(",");
-                String property = propOrderSplit[0];
-                if (propOrderSplit.length == 1) {
-                    orders.add(new Sort.Order(property));
-                } else {
-                    Sort.Direction direction
-                            = Sort.Direction.fromStringOrNull(propOrderSplit[1]);
-                    orders.add(new Sort.Order(direction, property));
-                }
-            }
-
-            return new PageRequest(page, size,
-                    orders.isEmpty() ? null : new Sort(orders));
-        }
+    private static int intParam(String value, int defaultValue) {
+        return value == null ? defaultValue : Integer.parseInt(value);
     }
 }

@@ -1,11 +1,12 @@
 package org.ohdsi.webapi.pathway;
 
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.ohdsi.webapi.pathway.domain.PathwayAnalysisEntity;
 import org.ohdsi.webapi.pathway.domain.PathwayAnalysisGenerationEntity;
 import org.ohdsi.webapi.pathway.dto.PathwayAnalysisDTO;
@@ -13,9 +14,9 @@ import org.ohdsi.webapi.pathway.repository.PathwayAnalysisGenerationRepository;
 import org.springframework.core.convert.support.GenericConversionService;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,7 +37,7 @@ public class PathwayServiceTest {
 
     @Test
     public void shouldGetByGenerationId() {
-        when(pathwayAnalysisGenerationRepository.findOne(anyLong(), any())).thenReturn(pathwayAnalysisGenerationEntity);
+        when(pathwayAnalysisGenerationRepository.findById(anyLong(), any())).thenReturn(Optional.of(pathwayAnalysisGenerationEntity));
         when(pathwayAnalysisGenerationEntity.getPathwayAnalysis()).thenReturn(pathwayAnalysisEntity);
         when(genericConversionService.convert(eq(pathwayAnalysisEntity), eq(PathwayAnalysisDTO.class))).thenReturn(pathwayAnalysisDTO);
         PathwayAnalysisDTO result = sut.getByGenerationId(1);

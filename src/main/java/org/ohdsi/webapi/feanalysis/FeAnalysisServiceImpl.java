@@ -196,7 +196,7 @@ public class FeAnalysisServiceImpl extends AbstractDaoService implements FeAnaly
       List<FeAnalysisCriteriaEntity> removed = original.getDesign().stream()
               .filter(c -> updated.getDesign().stream().noneMatch(u -> Objects.equals(c.getId(), u.getId())))
               .collect(Collectors.toList());
-      criteriaRepository.delete(removed);
+      criteriaRepository.deleteAll(removed);
     }
 
     @Override

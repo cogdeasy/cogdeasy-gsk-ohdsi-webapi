@@ -37,7 +37,7 @@ public class IRVersionToIRAnalysisVersionFullDTOConverter
 
     @Override
     public IRVersionFullDTO convert(IRVersion source) {
-        IncidenceRateAnalysis def = this.analysisRepository.findOne(source.getAssetId().intValue());
+        IncidenceRateAnalysis def = this.analysisRepository.findById(source.getAssetId().intValue()).orElse(null);
         ExceptionUtils.throwNotFoundExceptionIfNull(def,
                 String.format("There is no incidence rate analysis with id = %d.", source.getAssetId()));
 

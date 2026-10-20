@@ -197,7 +197,7 @@ public class ScriptExecutionCallbackController {
         contentList = sensitiveInfoService.filterSensitiveInfo(contentList, variables);
 
         List<AnalysisResultFileContent> analysisRepackResult = analysisZipRepackService.process(contentList.getFiles(), zipVolumeSizeMb);
-        analysisResultFileContentRepository.save(analysisRepackResult);
+        analysisResultFileContentRepository.saveAll(analysisRepackResult);
 
     }
 

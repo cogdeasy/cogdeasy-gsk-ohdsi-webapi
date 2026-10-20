@@ -22,7 +22,7 @@ import java.util.Optional;
 public class IRAnalysisInfoListener implements JobExecutionListener {
 
     private static final int MAX_MESSAGE_LENGTH = 2000;
-    private static final EntityGraph IR_WITH_EXECUTION_INFOS_ENTITY_GRAPH = EntityGraphUtils.fromName("IncidenceRateAnalysis.withExecutionInfoList");
+    private static final EntityGraph IR_WITH_EXECUTION_INFOS_ENTITY_GRAPH = EntityGraphUtils.fromName("IncidenceRateAnalysis.withExecutionInfoList", false);
 
     private final TransactionTemplate transactionTemplate;
     private final IncidenceRateAnalysisRepository incidenceRateAnalysisRepository;

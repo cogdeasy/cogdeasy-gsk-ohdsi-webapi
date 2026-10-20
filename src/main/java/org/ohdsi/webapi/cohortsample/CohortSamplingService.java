@@ -196,7 +196,7 @@ public class CohortSamplingService extends AbstractDaoService {
 	 */
 	public void refreshSample(Integer sampleId) {
 		
-				CohortSample sample = sampleRepository.findById(sampleId);
+				CohortSample sample = sampleRepository.findById(sampleId).orElse(null);
 		if (sample == null) {
 			throw new NotFoundException("Cohort sample with ID " + sampleId + " not found");
 		}
@@ -452,7 +452,7 @@ public class CohortSamplingService extends AbstractDaoService {
 						resultsSchema,
 						"cohortSampleId",
 						sampleId).getSql();
-		CohortSample sample = sampleRepository.findOne(sampleId);
+		CohortSample sample = sampleRepository.findById(sampleId);
 		if (sample == null) {
 			throw new NotFoundException("Sample with ID " + sampleId + " does not exist");
 		}
@@ -464,7 +464,7 @@ public class CohortSamplingService extends AbstractDaoService {
 		}
 
 		getTransactionTemplate().execute((TransactionCallback<Void>) transactionStatus -> {
-			sampleRepository.delete(sampleId);
+			sampleRepository.deleteById(sampleId);
 			jdbcTemplate.update(sql, sampleId);
 			return null;
 		});
