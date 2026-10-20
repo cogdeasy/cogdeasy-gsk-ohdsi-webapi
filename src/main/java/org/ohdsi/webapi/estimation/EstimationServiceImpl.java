@@ -150,13 +150,13 @@ public class EstimationServiceImpl extends AnalysisExecutionSupport implements E
     
     @Override
     public Estimation getById(Integer id) {
-        return estimationRepository.findOne(id, COMMONS_ENTITY_GRAPH);
+        return estimationRepository.findById(id, COMMONS_ENTITY_GRAPH).orElse(null);
     }
 
     @Override
     public void delete(final int id) {
 
-        this.estimationRepository.delete(id);
+        this.estimationRepository.deleteById(id);
     }
 
     @Override
@@ -197,7 +197,7 @@ public class EstimationServiceImpl extends AnalysisExecutionSupport implements E
     @Override
     public Estimation copy(final int id) throws Exception {
 
-        Estimation est = estimationRepository.findOne(id);
+        Estimation est = estimationRepository.findById(id).orElse(null);
         entityManager.detach(est); // Detach from the persistence context in order to save a copy
         est.setId(null);
         est.setName(getNameForCopy(est.getName()));
@@ -207,12 +207,12 @@ public class EstimationServiceImpl extends AnalysisExecutionSupport implements E
     @Override
     public Estimation getAnalysis(int id) {
 
-        return estimationRepository.findOne(id, COMMONS_ENTITY_GRAPH);
+        return estimationRepository.findById(id, COMMONS_ENTITY_GRAPH).orElse(null);
     }
 
     @Override
     public EstimationAnalysisImpl getAnalysisExpression(int id) {
-        return Utils.deserialize(estimationRepository.findOne(id, COMMONS_ENTITY_GRAPH).getSpecification(), EstimationAnalysisImpl.class);
+        return Utils.deserialize(estimationRepository.findById(id, COMMONS_ENTITY_GRAPH).orElse(null).getSpecification(), EstimationAnalysisImpl.class);
     }
 
     @Override
@@ -400,7 +400,7 @@ public class EstimationServiceImpl extends AnalysisExecutionSupport implements E
             est.setName(NameUtils.getNameWithSuffix(analysis.getName(), this::getNamesLike));
 
             Estimation savedEstimation = this.createEstimation(est);
-            return estimationRepository.findOne(savedEstimation.getId(), COMMONS_ENTITY_GRAPH);
+            return estimationRepository.findById(savedEstimation.getId(), COMMONS_ENTITY_GRAPH).orElse(null);
         } catch (Exception e) {
             log.debug("Error while importing estimation analysis: " + e.getMessage());
             throw e;
@@ -475,7 +475,7 @@ public class EstimationServiceImpl extends AnalysisExecutionSupport implements E
     @Override
     public EstimationGenerationEntity getGeneration(Long generationId) {
 
-        return generationRepository.findOne(generationId, DEFAULT_ENTITY_GRAPH);
+        return generationRepository.findById(generationId, DEFAULT_ENTITY_GRAPH).orElse(null);
     }
     
     private Estimation save(Estimation analysis) {

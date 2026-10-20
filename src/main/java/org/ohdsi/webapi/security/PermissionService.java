@@ -114,7 +114,7 @@ public class PermissionService {
 
     public void checkCommonEntityOwnership(EntityType entityType, Integer entityId) throws Exception {
 
-        JpaRepository entityRepository = (JpaRepository) (((Advised) repositories.getRepositoryFor(entityType.getEntityClass())).getTargetSource().getTarget());
+        JpaRepository entityRepository = (JpaRepository) (((Advised) repositories.getRepositoryFor(entityType.getEntityClass()).orElse(null)).getTargetSource().getTarget());
         Class idClazz = Arrays.stream(entityType.getEntityClass().getMethods())
             // Overriden methods from parameterized interface are "bridges" and should be ignored.
             // For more information see https://docs.oracle.com/javase/tutorial/java/generics/bridgeMethods.html
@@ -148,14 +148,14 @@ public class PermissionService {
 
     public void removePermissionsFromRole(Map<String, String> permissionTemplates, Integer entityId, Long roleId) {
 
-        RoleEntity role = roleRepository.findById(roleId);
+        RoleEntity role = roleRepository.findById(roleId).orElse(null);
         permissionTemplates.keySet()
                 .forEach(pt -> {
                     String permission = getPermission(pt, entityId);
                     PermissionEntity permissionEntity = permissionRepository.findByValueIgnoreCase(permission);
                     if (permissionEntity != null) {
                         RolePermissionEntity rp = rolePermissionRepository.findByRoleAndPermission(role, permissionEntity);
-                        rolePermissionRepository.delete(rp.getId());
+                        rolePermissionRepository.deleteById(rp.getId());
                     }
                 });
     }

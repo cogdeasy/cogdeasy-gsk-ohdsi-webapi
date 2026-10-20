@@ -1,0 +1,21 @@
+$ curl -sS -i -X POST http://localhost:8090/WebAPI/conceptset/ -H 'Content-Type: application/json' -d '{"name":"GSK-55 OQ synthetic 1792516483","description":"GSK-55 OQ step 6"}'
+HTTP/1.1 200 
+Server: nginx/1.27.5
+Date: Tue, 20 Oct 2026 17:14:43 GMT
+Content-Type: application/json
+Content-Length: 183
+Connection: keep-alive
+Vary: Accept-Encoding
+
+{"createdDate":1792516483132,"modifiedDate":1792516483133,"hasWriteAccess":false,"hasReadAccess":false,"id":3,"name":"GSK-55 OQ synthetic 1792516483","description":"GSK-55 OQ step 6"}
+
+$ (same request again)
+HTTP/1.1 409 
+Server: nginx/1.27.5
+Date: Tue, 20 Oct 2026 17:14:43 GMT
+Content-Type: application/json
+Content-Length: 454
+Connection: keep-alive
+Vary: Accept-Encoding
+
+{"payload":{"cause":null,"stackTrace":[],"message":"Key (concept_set_name)=(GSK-55 OQ synthetic 1792516483) already exists.  Call getNextException to see other errors in the batch.","suppressed":[],"localizedMessage":"Key (concept_set_name)=(GSK-55 OQ synthetic 1792516483) already exists.  Call getNextException to see other errors in the batch."},"headers":{"id":"fa2bd8e2-7100-5f97-9028-2d1dc4be772a","timestamp":1792516483256},"originalMessage":null}

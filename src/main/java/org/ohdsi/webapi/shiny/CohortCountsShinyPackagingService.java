@@ -63,11 +63,11 @@ public class CohortCountsShinyPackagingService extends CommonShinyPackagingServi
     @Override
     @Transactional
     public void populateAppData(Integer generationId, String sourceKey, ShinyAppDataConsumers dataConsumers) {
-        CohortDefinition cohort = cohortDefinitionRepository.findOne(generationId);
+        CohortDefinition cohort = cohortDefinitionRepository.findById(generationId).orElse(null);
         ExceptionUtils.throwNotFoundExceptionIfNull(cohort, String.format("There is no cohort definition with id = %d.", generationId));
 
         int sourceId = getSourceRepository().findBySourceKey(sourceKey).getId();
-        CohortGenerationInfo cohortGenerationInfo = cohortGenerationInfoRepository.findOne(new CohortGenerationInfoId(cohort.getId(), sourceId));
+        CohortGenerationInfo cohortGenerationInfo = cohortGenerationInfoRepository.findById(new CohortGenerationInfoId(cohort.getId(), sourceId)).orElse(null);
 
         CohortExpression cohortExpression = cohort.getExpression();
 
@@ -135,7 +135,7 @@ public class CohortCountsShinyPackagingService extends CommonShinyPackagingServi
 
     @Override
     public ApplicationBrief getBrief(Integer generationId, String sourceKey) {
-        CohortDefinition cohort = cohortDefinitionRepository.findOne(generationId);
+        CohortDefinition cohort = cohortDefinitionRepository.findById(generationId).orElse(null);
         Integer assetId = cohort.getId();
         Integer sourceId = sourceRepository.findBySourceKey(sourceKey).getSourceId();
 

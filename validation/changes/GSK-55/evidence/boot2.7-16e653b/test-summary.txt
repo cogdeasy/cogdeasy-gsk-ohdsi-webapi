@@ -1,0 +1,4 @@
+$ mvn -B -Pwebapi-postgresql test   # JDK 17, commit 16e653b4
+[WARNING] Tests run: 237, Failures: 0, Errors: 0, Skipped: 3
+[WARNING] Tests run: 11, Failures: 0, Errors: 0, Skipped: 1
+[INFO] BUILD SUCCESS

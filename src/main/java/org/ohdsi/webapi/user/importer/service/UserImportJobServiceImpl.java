@@ -47,7 +47,7 @@ public class UserImportJobServiceImpl extends BaseJobServiceImpl<UserImportJob> 
   private final StepBuilderFactory stepBuilderFactory;
   private final JobBuilderFactory jobBuilders;
   private final JobTemplate jobTemplate;
-  private EntityGraph jobWithMappingEntityGraph = EntityGraphUtils.fromName("jobWithMapping");
+  private EntityGraph jobWithMappingEntityGraph = EntityGraphUtils.fromName("jobWithMapping", false);
 
   public UserImportJobServiceImpl(TaskScheduler taskScheduler,
                                   CronDefinition cronDefinition,
@@ -85,7 +85,7 @@ public class UserImportJobServiceImpl extends BaseJobServiceImpl<UserImportJob> 
   protected void saveAdditionalFields(UserImportJob job) {
     if (job.getRoleGroupMapping() != null && !job.getRoleGroupMapping().isEmpty()) {
       job.getRoleGroupMapping().forEach(mapping -> mapping.setUserImportJob(job));
-      roleGroupRepository.save(job.getRoleGroupMapping());
+      roleGroupRepository.saveAll(job.getRoleGroupMapping());
     }
   }
 
@@ -105,10 +105,10 @@ public class UserImportJobServiceImpl extends BaseJobServiceImpl<UserImportJob> 
     List<RoleGroupEntity> created = RoleGroupUtils.findCreated(existMapping, updatedMapping);
     created.forEach(c -> c.setUserImportJob(exists));
     if (!deleted.isEmpty()) {
-      roleGroupRepository.delete(deleted);
+      roleGroupRepository.deleteAll(deleted);
     }
     if (!created.isEmpty()) {
-      existMapping.addAll(roleGroupRepository.save(created));
+      existMapping.addAll(roleGroupRepository.saveAll(created));
     }
     exists.setPreserveRoles(updated.getPreserveRoles());
   }
@@ -128,7 +128,7 @@ public class UserImportJobServiceImpl extends BaseJobServiceImpl<UserImportJob> 
   @Override
   public Optional<UserImportJob> getJob(Long id) {
 
-    return Optional.ofNullable(jobRepository.findOne(id)).map(this::assignNextExecution);
+    return Optional.ofNullable(jobRepository.findById(id).orElse(null)).map(this::assignNextExecution);
   }
 
   @Override

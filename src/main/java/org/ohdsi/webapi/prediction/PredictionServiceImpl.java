@@ -123,12 +123,12 @@ public class PredictionServiceImpl extends AnalysisExecutionSupport implements P
 
     @Override
     public PredictionAnalysis getById(Integer id) {
-        return predictionAnalysisRepository.findOne(id, COMMONS_ENTITY_GRAPH);
+        return predictionAnalysisRepository.findById(id, COMMONS_ENTITY_GRAPH).orElse(null);
     }
 
     @Override
     public void delete(final int id) {
-        this.predictionAnalysisRepository.delete(id);
+        this.predictionAnalysisRepository.deleteById(id);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class PredictionServiceImpl extends AnalysisExecutionSupport implements P
 
     @Override
     public PredictionAnalysis copy(final int id) {
-        PredictionAnalysis analysis = this.predictionAnalysisRepository.findOne(id);
+        PredictionAnalysis analysis = this.predictionAnalysisRepository.findById(id).orElse(null);
         entityManager.detach(analysis); // Detach from the persistence context in order to save a copy
         analysis.setId(null);
         analysis.setName(getNameForCopy(analysis.getName()));
@@ -177,7 +177,7 @@ public class PredictionServiceImpl extends AnalysisExecutionSupport implements P
     @Override
     public PredictionAnalysis getAnalysis(int id) {
 
-        return this.predictionAnalysisRepository.findOne(id, COMMONS_ENTITY_GRAPH);
+        return this.predictionAnalysisRepository.findById(id, COMMONS_ENTITY_GRAPH).orElse(null);
     }
 
     @Override
@@ -188,7 +188,7 @@ public class PredictionServiceImpl extends AnalysisExecutionSupport implements P
 
     @Override
     public PatientLevelPredictionAnalysisImpl exportAnalysis(int id, String sourceKey) {
-        PredictionAnalysis pred = predictionAnalysisRepository.findOne(id);
+        PredictionAnalysis pred = predictionAnalysisRepository.findById(id).orElse(null);
         PatientLevelPredictionAnalysisImpl expression;
         try {
             expression = Utils.deserialize(pred.getSpecification(), PatientLevelPredictionAnalysisImpl.class);
@@ -298,7 +298,7 @@ public class PredictionServiceImpl extends AnalysisExecutionSupport implements P
             pa.setName(NameUtils.getNameWithSuffix(analysis.getName(), this::getNamesLike));
 
             PredictionAnalysis savedAnalysis = this.createAnalysis(pa);
-            return predictionAnalysisRepository.findOne(savedAnalysis.getId(), COMMONS_ENTITY_GRAPH);
+            return predictionAnalysisRepository.findById(savedAnalysis.getId(), COMMONS_ENTITY_GRAPH).orElse(null);
         } catch (Exception e) {
             log.debug("Error while importing prediction analysis: " + e.getMessage());
             throw e;
@@ -378,7 +378,7 @@ public class PredictionServiceImpl extends AnalysisExecutionSupport implements P
     @Override
     public PredictionGenerationEntity getGeneration(Long generationId) {
 
-        return generationRepository.findOne(generationId, DEFAULT_ENTITY_GRAPH);
+        return generationRepository.findById(generationId, DEFAULT_ENTITY_GRAPH).orElse(null);
     }
     
     private PredictionAnalysis save(PredictionAnalysis analysis) {

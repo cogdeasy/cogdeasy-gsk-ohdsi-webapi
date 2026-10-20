@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.ohdsi.webapi.pathway.PathwayService;
 import org.ohdsi.webapi.pathway.domain.PathwayAnalysisGenerationEntity;
 import org.ohdsi.webapi.pathway.dto.PathwayAnalysisDTO;
@@ -18,14 +18,15 @@ import org.ohdsi.webapi.pathway.dto.internal.PathwayAnalysisResult;
 import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+// Silent = Mockito 1 runner behaviour (no strict-stubs check).
+@RunWith(MockitoJUnitRunner.Silent.class)
 public class CohortPathwaysShinyPackagingServiceTest {
 
     private static final int GENERATION_ID = 1;
@@ -62,7 +63,7 @@ public class CohortPathwaysShinyPackagingServiceTest {
         when(pathwayService.getByGenerationId(eq(GENERATION_ID))).thenReturn(pathwayAnalysisDTO);
         when(pathwayService.getGeneration(eq((long) GENERATION_ID))).thenReturn(generationEntity);
 
-        CommonShinyPackagingService.ShinyAppDataConsumers dataConsumers = Mockito.mock(CommonShinyPackagingService.ShinyAppDataConsumers.class, Answers.RETURNS_DEEP_STUBS.get());
+        CommonShinyPackagingService.ShinyAppDataConsumers dataConsumers = Mockito.mock(CommonShinyPackagingService.ShinyAppDataConsumers.class, Answers.RETURNS_DEEP_STUBS);
         sut.populateAppData(GENERATION_ID, SOURCE_KEY, dataConsumers);
 
         verify(dataConsumers.getTextFiles(), times(1)).accept(eq("design.json"), anyString());

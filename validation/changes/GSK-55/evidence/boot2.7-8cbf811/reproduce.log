@@ -1,0 +1,6 @@
+FAIL   no cause                       mapper threw java.lang.NullPointerException
+FAIL   single cause                   mapper threw java.lang.NullPointerException
+FAIL   nested cause without Detail    409 "duplicate key value violates unique constraint "uq_cs_name""  <- raw database text
+ok     nested cause with Detail       409 "Key (name)=(Diabetes) already exists."
+
+REPRODUCED: 3 of 4 scenarios return an unsafe response

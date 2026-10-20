@@ -1,11 +1,11 @@
 package org.ohdsi.webapi;
 
-import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.glassfish.jersey.internal.inject.AbstractBinder;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.message.GZipEncoder;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.filter.EncodingFilter;
-import org.glassfish.jersey.server.spi.internal.ValueFactoryProvider;
+import org.glassfish.jersey.server.spi.internal.ValueParamProvider;
 import org.ohdsi.webapi.cohortcharacterization.CcController;
 import org.ohdsi.webapi.executionengine.controller.ScriptExecutionCallbackController;
 import org.ohdsi.webapi.executionengine.controller.ScriptExecutionController;
@@ -93,7 +93,7 @@ public class JerseyConfig extends ResourceConfig implements InitializingBean {
             @Override
             protected void configure() {
                 bind(PageableValueFactoryProvider.class)
-                        .to(ValueFactoryProvider.class)
+                        .to(ValueParamProvider.class)
                         .in(Singleton.class);
             }
         });

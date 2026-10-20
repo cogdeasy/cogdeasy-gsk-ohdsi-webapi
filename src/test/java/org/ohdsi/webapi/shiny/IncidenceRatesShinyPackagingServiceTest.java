@@ -1,6 +1,7 @@
 package org.ohdsi.webapi.shiny;
 
 
+import java.util.Optional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.odysseusinc.arachne.commons.api.v1.dto.CommonAnalysisType;
@@ -11,7 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.ohdsi.webapi.cohortdefinition.dto.CohortDTO;
 import org.ohdsi.webapi.ircalc.AnalysisReport;
 import org.ohdsi.webapi.ircalc.IncidenceRateAnalysis;
@@ -23,8 +24,9 @@ import org.ohdsi.webapi.source.Source;
 import org.ohdsi.webapi.source.SourceRepository;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -56,7 +58,7 @@ public class IncidenceRatesShinyPackagingServiceTest {
     public void shouldGetBrief() {
         IncidenceRateAnalysis incidenceRateAnalysis = createIncidenceRateAnalysis();
 
-        when(repository.findOne(analysisId)).thenReturn(incidenceRateAnalysis);
+        when(repository.findById(analysisId)).thenReturn(Optional.of(incidenceRateAnalysis));
         Source source = new Source();
         source.setSourceId(3);
         when(sourceRepository.findBySourceKey("sourceKey")).thenReturn(source);
@@ -75,9 +77,9 @@ public class IncidenceRatesShinyPackagingServiceTest {
         source.setSourceId(3);
         when(sourceRepository.findBySourceKey("source")).thenReturn(source);
 
-        IncidenceRateAnalysis analysis = Mockito.mock(IncidenceRateAnalysis.class, Answers.RETURNS_DEEP_STUBS.get());
+        IncidenceRateAnalysis analysis = Mockito.mock(IncidenceRateAnalysis.class, Answers.RETURNS_DEEP_STUBS);
         when(analysis.getDetails().getExpression()).thenReturn("{}");
-        when(repository.findOne(generationId)).thenReturn(analysis);
+        when(repository.findById(generationId)).thenReturn(Optional.of(analysis));
 
         CohortDTO targetCohort = new CohortDTO();
         targetCohort.setId(101);
@@ -97,11 +99,11 @@ public class IncidenceRatesShinyPackagingServiceTest {
         analysisReport.summary = new AnalysisReport.Summary();
         when(irAnalysisResource.getAnalysisReport(1, "source", 101, 201)).thenReturn(analysisReport);
 
-        CommonShinyPackagingService.ShinyAppDataConsumers dataConsumers = mock(CommonShinyPackagingService.ShinyAppDataConsumers.class, Answers.RETURNS_DEEP_STUBS.get());
+        CommonShinyPackagingService.ShinyAppDataConsumers dataConsumers = mock(CommonShinyPackagingService.ShinyAppDataConsumers.class, Answers.RETURNS_DEEP_STUBS);
 
         sut.populateAppData(generationId, sourceKey, dataConsumers);
 
-        verify(dataConsumers.getAppProperties(), times(11)).accept(anyString(), anyString());
+        verify(dataConsumers.getAppProperties(), times(11)).accept(anyString(), nullable(String.class));
         verify(dataConsumers.getTextFiles(), times(1)).accept(anyString(), anyString());
         verify(dataConsumers.getJsonObjects(), times(1)).accept(anyString(), any());
     }

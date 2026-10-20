@@ -138,7 +138,7 @@ public class IRAnalysisService extends AbstractDaoService implements
   private final static String STRATA_STATS_QUERY_TEMPLATE = ResourceHelper.GetResourceAsString("/resources/incidencerate/sql/strata_stats.sql");
   private static final String NAME = "irAnalysis";
   private static final String NO_INCIDENCE_RATE_ANALYSIS_MESSAGE = "There is no incidence rate analysis with id = %d.";
-  private static final EntityGraph ANALYSIS_WITH_EXECUTION_INFO = EntityGraphUtils.fromName("IncidenceRateAnalysis.withExecutionInfoList");
+  private static final EntityGraph ANALYSIS_WITH_EXECUTION_INFO = EntityGraphUtils.fromName("IncidenceRateAnalysis.withExecutionInfoList", false);
 
   private final IRAnalysisQueryBuilder queryBuilder;
 
@@ -396,7 +396,7 @@ public class IRAnalysisService extends AbstractDaoService implements
   @Transactional
   public IRAnalysisDTO getAnalysis(final int id) {
     return getTransactionTemplate().execute(transactionStatus -> {
-      IncidenceRateAnalysis a = this.irAnalysisRepository.findOne(id);
+      IncidenceRateAnalysis a = this.irAnalysisRepository.findById(id).orElse(null);
       ExceptionUtils.throwNotFoundExceptionIfNull(a, String.format(NO_INCIDENCE_RATE_ANALYSIS_MESSAGE, id));
       return conversionService.convert(a, IRAnalysisDTO.class);
     });
@@ -428,7 +428,7 @@ public class IRAnalysisService extends AbstractDaoService implements
     @Override
     @Transactional
     public IRAnalysisDTO export(final Integer id) {
-      IncidenceRateAnalysis analysis = this.irAnalysisRepository.findOne(id);
+      IncidenceRateAnalysis analysis = this.irAnalysisRepository.findById(id).orElse(null);
       ExceptionUtils.throwNotFoundExceptionIfNull(analysis, String.format(NO_INCIDENCE_RATE_ANALYSIS_MESSAGE, id));
 
       try {
@@ -462,7 +462,7 @@ public class IRAnalysisService extends AbstractDaoService implements
     saveVersion(id);
 
     UserEntity user = userRepository.findByLogin(security.getSubject());
-    IncidenceRateAnalysis updatedAnalysis = this.irAnalysisRepository.findOne(id);
+    IncidenceRateAnalysis updatedAnalysis = this.irAnalysisRepository.findById(id).orElse(null);
     updatedAnalysis.setName(StringUtils.trim(analysis.getName()))
             .setDescription(analysis.getDescription());
     updatedAnalysis.setModifiedBy(user);
@@ -537,7 +537,7 @@ public class IRAnalysisService extends AbstractDaoService implements
       getSourceJdbcTemplate(source),
       chunkContext -> {
           Integer irId = Integer.valueOf(chunkContext.getStepContext().getJobParameters().get(ANALYSIS_ID).toString());
-          IncidenceRateAnalysis ir = this.irAnalysisRepository.findOne(irId);
+          IncidenceRateAnalysis ir = this.irAnalysisRepository.findById(irId).orElse(null);
           IncidenceRateAnalysisExpression expression = Utils.deserialize(ir.getDetails().getExpression(), IncidenceRateAnalysisExpression.class);
           return Stream.concat(
               expression.targetIds.stream(),
@@ -664,7 +664,7 @@ public class IRAnalysisService extends AbstractDaoService implements
     Map<Integer, String> distTypeLookup = ImmutableMap.of(1, "TAR", 2, "TTO");
 
     try {
-      IncidenceRateAnalysis analysis = this.irAnalysisRepository.findOne(id);
+      IncidenceRateAnalysis analysis = this.irAnalysisRepository.findById(id).orElse(null);
       Set<ExecutionInfo> executions = analysis.getExecutionInfoList();
 
       fileList.put("analysisDefinition.json", analysis.getDetails().getExpression());
@@ -782,13 +782,13 @@ public class IRAnalysisService extends AbstractDaoService implements
   @Override
   @Transactional
   public void delete(final int id) {
-    irAnalysisRepository.delete(id);
+    irAnalysisRepository.deleteById(id);
   }
 
   @Override
   @Transactional
   public void deleteInfo(final int id, final String sourceKey) {
-    IncidenceRateAnalysis analysis = irAnalysisRepository.findOne(id);
+    IncidenceRateAnalysis analysis = irAnalysisRepository.findById(id).orElse(null);
     ExecutionInfo itemToRemove = null;
     for (ExecutionInfo info : analysis.getExecutionInfoList())
     {
@@ -805,14 +805,14 @@ public class IRAnalysisService extends AbstractDaoService implements
   @Override
   @Transactional
   public void assignTag(final Integer id, final int tagId) {
-    IncidenceRateAnalysis entity = irAnalysisRepository.findOne(id);
+    IncidenceRateAnalysis entity = irAnalysisRepository.findById(id).orElse(null);
     assignTag(entity, tagId);
   }
 
   @Override
   @Transactional
   public void unassignTag(final Integer id, final int tagId) {
-    IncidenceRateAnalysis entity = irAnalysisRepository.findOne(id);
+    IncidenceRateAnalysis entity = irAnalysisRepository.findById(id).orElse(null);
     unassignTag(entity, tagId);
   }
 
@@ -912,7 +912,7 @@ public class IRAnalysisService extends AbstractDaoService implements
 
       List<ExecutionInfo> executions = irExecutionInfoRepository.findByStatusIn(INVALIDATE_STATUSES);
       invalidateExecutions(executions);
-      irExecutionInfoRepository.save(executions);
+      irExecutionInfoRepository.saveAll(executions);
       return null;
     });
   }
@@ -928,7 +928,7 @@ public class IRAnalysisService extends AbstractDaoService implements
   private void fillCohorts(List<Integer> outcomeIds, List<CohortDTO> cohortDefinitions) {
     cohortDefinitions.clear();
     for (Integer cohortId : outcomeIds) {
-      CohortDefinition cohortDefinition = cohortDefinitionRepository.findOne(cohortId);
+      CohortDefinition cohortDefinition = cohortDefinitionRepository.findById(cohortId).orElse(null);
       if (Objects.isNull(cohortDefinition)) {
         // Pass cohort without name to client if no cohort definition found
         cohortDefinition = new CohortDefinition();
@@ -975,14 +975,14 @@ public class IRAnalysisService extends AbstractDaoService implements
     ExceptionUtils.throwNotFoundExceptionIfNull(irVersion,
             String.format("There is no incidence rates analysis version with id = %d.", version));
 
-    IncidenceRateAnalysis entity = this.irAnalysisRepository.findOne(id);
+    IncidenceRateAnalysis entity = this.irAnalysisRepository.findById(id).orElse(null);
     if (checkOwnerShip) {
       checkOwnerOrAdminOrGranted(entity);
     }
   }
 
   private IRVersion saveVersion(int id) {
-    IncidenceRateAnalysis def = this.irAnalysisRepository.findOne(id);
+    IncidenceRateAnalysis def = this.irAnalysisRepository.findById(id).orElse(null);
     IRVersion version = conversionService.convert(def, IRVersion.class);
 
     UserEntity user = Objects.nonNull(def.getModifiedBy()) ? def.getModifiedBy() : def.getCreatedBy();

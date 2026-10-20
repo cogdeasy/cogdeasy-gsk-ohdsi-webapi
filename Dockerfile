@@ -1,4 +1,4 @@
-FROM maven:3.6-jdk-11 as builder
+FROM maven:3.8-eclipse-temurin-17 as builder
 
 WORKDIR /code
 
@@ -30,7 +30,7 @@ RUN mvn package ${MAVEN_PARAMS} \
     && rm WebAPI.war
 
 # OHDSI WebAPI and ATLAS web application running as a Spring Boot application with Java 8
-FROM index.docker.io/library/eclipse-temurin:8-jre
+FROM index.docker.io/library/eclipse-temurin:17-jre
 
 MAINTAINER Lee Evans - www.ltscomputingllc.com
 
@@ -41,7 +41,8 @@ ENV CLASSPATH=""
 # Default Java options. The first entry is a fix for when java reads secure random numbers:
 # in a containerized system using /dev/random may reduce entropy too much, causing slowdowns.
 # https://ruleoftech.com/2016/avoiding-jvm-delays-caused-by-random-number-generation
-ENV DEFAULT_JAVA_OPTS="-Djava.security.egd=file:///dev/./urandom"
+# --add-opens: Redshift JDBC 1.2.x needs reflective access to java.net on Java 17.
+ENV DEFAULT_JAVA_OPTS="-Djava.security.egd=file:///dev/./urandom --add-opens java.base/java.net=ALL-UNNAMED"
 
 # set working directory to a fixed WebAPI directory
 WORKDIR /var/lib/ohdsi/webapi

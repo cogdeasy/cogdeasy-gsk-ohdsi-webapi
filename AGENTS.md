@@ -7,13 +7,14 @@ approver and a change record, but not full CSV re-validation. See `validation/RE
 
 ## Toolchain
 
-- Java 8 (`maven.compiler.source/target 1.8`), Spring Boot 1.5, Jersey (JAX-RS), Shiro.
+- Java 17 (`maven.compiler.release 17`), Spring Boot 2.7, Jersey (JAX-RS), Shiro. See
+  `docs/adr/0001-spring-boot-2-7-java-17.md`.
 - Maven profile `webapi-postgresql` for every command.
-- Tests use JUnit 4. Database tests start an embedded PostgreSQL (zonky) on Linux x86-64, no
+- Tests use JUnit 4 on the JUnit Platform (vintage engine); new tests may use JUnit 5. Database tests start an embedded PostgreSQL (zonky) on Linux x86-64, no
   external database is needed.
 
 ```bash
-export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
 mvn -B -Pwebapi-postgresql -DskipUnitTests -DskipITtests compile   # fast compile
 mvn -B -Pwebapi-postgresql test                                    # full suite + JaCoCo
 mvn -B -Pwebapi-postgresql -Dtest=GenericExceptionMapperTest test  # one class
