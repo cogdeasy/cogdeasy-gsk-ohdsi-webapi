@@ -1,0 +1,21 @@
+$ curl -sS -i http://localhost:8090/WebAPI/info
+HTTP/1.1 200 
+Server: nginx/1.27.5
+Date: Tue, 20 Oct 2026 17:14:42 GMT
+Content-Type: application/json
+Content-Length: 504
+Connection: keep-alive
+Vary: Accept-Encoding
+
+{"version":"2.15.1","buildInfo":{"artifactVersion":"WebAPI 2.15.1-SNAPSHOT","build":"NA","timestamp":"2026-10-20T17:13:41.352Z","branch":"devin/gsk-55-spring-boot-2-7","commitId":"8cbf811","atlasRepositoryInfo":{"milestoneId":47,"releaseTag":"*"},"webapiRepositoryInfo":{"milestoneId":49,"releaseTag":"*"}},"configuration":{"security":{"samlActivated":false,"enabled":false,"samlEnabled":false},"person":{"viewDatesPermitted":false},"plugins":{"atlasgisEnabled":false},"heracles":{"smallCellCount":"5"}}}
+
+$ curl -sS -i http://localhost:8090/WebAPI/source/sources
+HTTP/1.1 200 
+Server: nginx/1.27.5
+Date: Tue, 20 Oct 2026 17:14:43 GMT
+Content-Type: application/json
+Content-Length: 385
+Connection: keep-alive
+Vary: Accept-Encoding
+
+[{"sourceId":1,"sourceName":"OHDSI Eunomia Demo Database","sourceDialect":"postgresql","sourceKey":"EUNOMIA","daimons":[{"sourceDaimonId":1,"daimonType":"CDM","tableQualifier":"demo_cdm","priority":0},{"sourceDaimonId":2,"daimonType":"Vocabulary","tableQualifier":"demo_cdm","priority":10},{"sourceDaimonId":3,"daimonType":"Results","tableQualifier":"demo_cdm_results","priority":5}]}]

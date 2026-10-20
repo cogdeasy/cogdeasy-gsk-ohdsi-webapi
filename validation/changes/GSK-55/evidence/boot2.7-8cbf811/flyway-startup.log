@@ -1,0 +1,13 @@
+2026-10-20 17:14:10.373 INFO main org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - [] - Bean 'flywayConfig' of type [org.ohdsi.webapi.FlywayConfig$$EnhancerBySpringCGLIB$$dc6fb22a] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2026-10-20 17:14:10.539 INFO main org.flywaydb.core.internal.util.logging.slf4j.Slf4jLog - [] - Flyway 4.2.0 by Boxfuse
+2026-10-20 17:14:10.804 INFO main org.flywaydb.core.internal.util.logging.slf4j.Slf4jLog - [] - Database: jdbc:postgresql://atlasdb:5432/postgres (PostgreSQL 16.4)
+2026-10-20 17:14:10.870 INFO main org.flywaydb.core.internal.util.logging.slf4j.Slf4jLog - [] - Creating Metadata table: "webapi"."schema_history"
+2026-10-20 17:14:10.890 INFO main org.flywaydb.core.internal.util.logging.slf4j.Slf4jLog - [] - Successfully baselined schema with version: 2.2.5.20180212152023
+2026-10-20 17:14:10.976 INFO main org.flywaydb.core.internal.util.logging.slf4j.Slf4jLog - [] - Current version of schema "webapi": 2.2.5.20180212152023
+2026-10-20 17:14:10.976 WARN main org.flywaydb.core.internal.util.logging.slf4j.Slf4jLog - [] - outOfOrder mode is active. Migration of schema "webapi" may not be reproducible.
+2026-10-20 17:14:12.281 INFO main org.flywaydb.core.internal.util.logging.slf4j.Slf4jLog - [] - Successfully applied 153 migrations to schema "webapi" (execution time 00:01.384s).
+2026-10-20 17:14:12.282 INFO main org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker - [] - Bean 'flyway' of type [org.flywaydb.core.Flyway] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2026-10-20 17:14:18.696 INFO main org.flywaydb.core.internal.util.logging.slf4j.Slf4jLog - [] - Current version of schema "webapi": 2.15.0.20241203000001
+2026-10-20 17:14:18.697 WARN main org.flywaydb.core.internal.util.logging.slf4j.Slf4jLog - [] - outOfOrder mode is active. Migration of schema "webapi" may not be reproducible.
+2026-10-20 17:14:19.098 INFO main org.flywaydb.core.internal.util.logging.slf4j.Slf4jLog - [] - Successfully applied 5 migrations to schema "webapi" (execution time 00:00.457s).
+2026-10-20 17:14:19.716 INFO main org.springframework.boot.StartupInfoLogger - [] - Started WebApi in 11.231 seconds (JVM running for 11.769)
